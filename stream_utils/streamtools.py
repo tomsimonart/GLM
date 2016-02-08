@@ -2,6 +2,7 @@
 # StreamTools by Infected
 
 from serial import Serial
+from time import sleep
 
 class Stream():
 
@@ -67,6 +68,7 @@ class Stream():
     def send_to_serial(self):
         for i in range(0,self.lenght-1,8):
             self.arduino.write(int(self.data[i:i+8],2).to_bytes(1,'little'))
+            sleep(0.001)
 
     def refresh(self):
         self.lenght = self.height * self.width

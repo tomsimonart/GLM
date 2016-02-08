@@ -32,9 +32,10 @@ def match_size(f):
                 dimension = list(map(int, line.split()))
                 # Dimentions of the pbm matrix
                 if dimension <= [64,16]:
-                    print('Dimensions: OK (led matrix)', file=sys.stderr)
+                    print('Dimensions: OK for led matrix', file=sys.stderr)
                 else:
-                    print('Dimensions: Warning (not compatible with led matrix)', file=sys.stderr)
+                    print('Dimensions: Not compatible with led matrix',
+                        file=sys.stderr)
 
                 return arrange(f.read(), dimension)
 

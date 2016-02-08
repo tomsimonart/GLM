@@ -27,17 +27,21 @@ class ExamplePlugin(Stream):
         """Used to send the data to a Stream object
         stream(self) is the main loop of a plugin"""
         while self.buffer_end == 0:
-            Stream.set_data_from_raw(self, self.data1)
-            print(self, end='')
-            Stream.send_to_serial(self)
-            sleep(self.delay)
-            system('clear')
+            try:
+                Stream.set_data_from_raw(self, self.data1)
+                print(self, end='')
+                Stream.send_to_serial(self)
+                sleep(self.delay)
+                system('clear')
 
-            Stream.set_data_from_raw(self, self.data2)
-            print(self, end='')
-            Stream.send_to_serial(self)
-            sleep(self.delay)
-            system('clear')
+                Stream.set_data_from_raw(self, self.data2)
+                print(self, end='')
+                Stream.send_to_serial(self)
+                sleep(self.delay)
+                system('clear')
+            except KeyboardInterrupt:
+                print('\nEnd')
+                exit()
 
     def get_info(self):
         """Get the current state and information of the plugin"""
@@ -48,4 +52,4 @@ class ExamplePlugin(Stream):
 
 plugin = ExamplePlugin()
 plugin.stream()
-# plugin.get_info()
+plugin.get_info()

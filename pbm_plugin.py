@@ -45,6 +45,8 @@ class PbmPlugin(Stream):
             self.pbm_data = ''.join(
                 [i.ljust(64,'0') for i in data.read().split('\n')]
                 )
+            if len(self.pbm_data) < 1024:
+                self.pbm_data += '0' * (1024 - len(self.pbm_data))
             data.close()
         except FileNotFoundError:
             data = None
