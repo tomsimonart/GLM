@@ -12,6 +12,7 @@ class Stream():
         self.byte = bytes(1)
         # Empty initial data
         self.data = ''.join(['0' for i in range(self.height * self.width)])
+        self.arduino = Serial('/dev/ttyACM0', 9600)
 
     def __str__(self):
         display = ''
@@ -64,7 +65,8 @@ class Stream():
         return self.data
 
     def send_to_serial(self):
-        pass
+        for i in range(0,self.lenght-1,8):
+            self.arduino.write(int(self.data[i:i+8],2).to_bytes(1,'little'))
 
     def refresh(self):
         self.lenght = self.height * self.width

@@ -29,11 +29,13 @@ class ExamplePlugin(Stream):
         while self.buffer_end == 0:
             Stream.set_data_from_raw(self, self.data1)
             print(self, end='')
+            Stream.send_to_serial(self)
             sleep(self.delay)
             system('clear')
 
             Stream.set_data_from_raw(self, self.data2)
             print(self, end='')
+            Stream.send_to_serial(self)
             sleep(self.delay)
             system('clear')
 

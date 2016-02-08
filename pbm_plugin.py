@@ -81,4 +81,5 @@ if __name__ == '__main__':
         else:
             plugin.stream()
             print(plugin, end='')
-            print(bytes(plugin))
+            # print(bytes(plugin))
+            plugin.send_to_serial()
