@@ -1,3 +1,5 @@
+#Made in one caffeine fueled weekend by Minorias
+
 import time,os
 class HImage:
     matrix_height = 16
