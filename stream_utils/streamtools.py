@@ -8,11 +8,12 @@ class Stream():
 
     def __init__(self):
         self.byte = bytes(1)
+        self.lenght = 1024
         # Empty initial data
         self.data = ''.join(['0' for i in range(1024)])
-        self.tty = '/dev/ttyACM1'
-        self.baudrate = 9600
-        self.arduino = Serial(self.tty, self.baudrate)
+        self.tty = '/dev/ttyACM0'
+        self.baud_rate = 19200
+        self.arduino = Serial(self.tty, self.baud_rate)
 
     def __str__(self):
         display = ''
