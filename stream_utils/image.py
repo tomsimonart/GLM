@@ -1,13 +1,19 @@
 #!/usr/bin/env python3
 
 class Image():
-    def __init__(self, width=64, height=16, pixmap=None):
+    def __init__(self, width=None, height=None, pixmap=None):
         self.width = width
         self.height = height
-        # pixmap as matrix
-        self.pixmap = pixmap
+        self.pixmap = pixmap # pixmap as matrix
 
-        if self.pixmap == None:
+        if width == None and height == None and pixmap == None:
+            self.width = 64
+            self.height = 16
+
+        if self.height == None or self.width == None:
+            self.auto_size()
+
+        elif self.pixmap == None:
             self.pixmap = [
                 [0 for j in range(self.width)] for i in range(self.height)
                 ]
@@ -17,6 +23,12 @@ class Image():
                 self.fill_width()
             if not self.check_height():
                 self.fill_height()
+
+    def auto_size(self):
+        self.width = max([len(i) for i in self.pixmap])
+        self.height = len(self.pixmap)
+        self.fill_width()
+        self.fill_height()
 
     def check_width(self):
         return all(len(i) == self.width for i in self.pixmap)
@@ -30,8 +42,11 @@ class Image():
         return len(self.pixmap) == self.height
 
     def fill_height(self):
-        self.pixmap = \
-        self.pixmap+[[0]*self.width]*(self.height-len(self.pixmap))
+        if len(self.pixmap) < self.height:
+            self.pixmap = \
+            self.pixmap + [[0] * self.width] * (self.height - len(self.pixmap))
+        else:
+            self.pixmap = self.pixmap[0:self.height]
 
     def resize(self, width, height):
         # Height
@@ -53,19 +68,14 @@ class Image():
         return str(self.pixmap)
 
     def __repr__(self):
-        data = [
-            'Image(',
-            self.width,
-            ',',
-            self.height,
-            ',',
-            self.pixmap,
-            ')'
-            ]
+        data = ['Image(', self.width, ',', self.height, ',', self.pixmap, ')']
         return str(''.join(map(str, data)))
 
+    def get_pixmap(self):
+        return self.pixmap
+
 if __name__ == '__main__':
-    table = [[1,0,0,1],[0,1,0,0,0],[0,1,0,1]]
-    lol = Image(width=7, height=4, pixmap=table)
+    table = [[1,1,0,1],[0,1],[0,0,0,0,0,1]]
+    lol = Image(width=None, height=None, pixmap=table)
     print(lol)
-    # lol.resize(5, 2)
+    troll = Image()
