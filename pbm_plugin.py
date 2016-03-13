@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-from stream_utils.streamtools import Stream
-from pbm_utils import pbmtools
+from libs.streamtools import Stream
+from libs import pbmtools
 
 class PbmPlugin(Stream):
     def __init__(self, file_in='test', directory='./pbm'):

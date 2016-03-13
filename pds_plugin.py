@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from stream_utils.streamtools import Stream
-from stream_utils.image import Image
+from libs.streamtools import Stream
+from libs.image import Image
 from random import randint
 from time import sleep
 from os import system
