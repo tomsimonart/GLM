@@ -20,7 +20,7 @@ class PbmPlugin(Stream):
 
         self.END = 'exit'
 
-        Stream.__init__(self, height=16, width=64)
+        Stream.__init__(self)
 
     def prompt(self):
         self.selection = input('>>> ')

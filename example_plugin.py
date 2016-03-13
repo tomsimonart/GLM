@@ -3,8 +3,9 @@
 from os import system
 from time import sleep
 from stream_utils.streamtools import Stream
+from stream_utils.image import Image
 
-class ExamplePlugin(Stream):
+class ExamplePlugin(Image):
     def __init__(self):
         # Credits - Version
         self.name = 'Demo Plugin'
@@ -12,33 +13,31 @@ class ExamplePlugin(Stream):
         self.version = 'beta 0.4'
 
         # Stream initialization
-        Stream.__init__(self, height=16, width=64)
+        Image.__init__(self)
 
         # Stream data
-        self.data1 = ''.join([str((i+1)%2) for i in range(1024)])
-        self.data2 = ''.join([str(i%2) for i in range(1024)])
+        self.data1 = [[0,1] * 8 for i in range(1024)]
+        self.data2 = [[1,0] * 8 for i in range(1024)]
         self.buffer_end = 0
-        self.delay = 0.4
-
-        # First data assignation (not necessary)
-        Stream.set_data_from_string(self, self.data2)
+        self.delay = 0.5
 
     def stream(self):
         """Used to send the data to a Stream object
         stream(self) is the main loop of a plugin"""
+
+        arduino = Stream()
+
         while self.buffer_end == 0:
             try:
-                Stream.set_data_from_raw(self, self.data1)
-                print(self, end='')
-                Stream.send_to_serial(self)
+                self.pixmap = self.data1
+                arduino.set_data_from_matrix(self.pixmap)
+                arduino.send_to_serial()
                 sleep(self.delay)
-                system('clear')
 
-                Stream.set_data_from_raw(self, self.data2)
-                print(self, end='')
-                Stream.send_to_serial(self)
+                self.pixmap = self.data2
+                arduino.set_data_from_matrix(self.pixmap)
+                arduino.send_to_serial()
                 sleep(self.delay)
-                system('clear')
             except KeyboardInterrupt:
                 print('\nEnd')
                 exit()
@@ -51,5 +50,5 @@ class ExamplePlugin(Stream):
         print(bytes(self))
 
 plugin = ExamplePlugin()
-plugin.stream()
 plugin.get_info()
+plugin.stream()

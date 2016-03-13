@@ -1,4 +1,4 @@
-// Authors: Infected, Minorias, rom1, iTitou
+// Authors: rom1, iTitou, Infected, Minorias
 
 #define COL_PIXEL     64
 #define ROW_PIXEL     16
@@ -174,7 +174,7 @@ void setup()
     // AVR Port Settings
     DDRD |= 0x78; //Set PIN 3 4 5 6 output
     
-    Serial.begin(9600);
+    Serial.begin(19200);
 }
 
 
