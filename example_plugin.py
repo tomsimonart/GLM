@@ -19,7 +19,7 @@ class ExamplePlugin(Image):
         self.data1 = [[0,1] * 8 for i in range(1024)]
         self.data2 = [[1,0] * 8 for i in range(1024)]
         self.buffer_end = 0
-        self.delay = 0.001
+        self.delay = 0.5
 
     def stream(self):
         """Used to send the data to a Stream object
@@ -50,5 +50,5 @@ class ExamplePlugin(Image):
         print(bytes(self))
 
 plugin = ExamplePlugin()
-plugin.stream()
 plugin.get_info()
+plugin.stream()

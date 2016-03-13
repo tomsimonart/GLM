@@ -6,14 +6,17 @@ from time import sleep
 
 class Stream():
 
-    def __init__(self):
+    def __init__(self, matrix=True):
+        self.matrix = matrix
         self.byte = bytes(1)
         self.lenght = 1024
         # Empty initial data
         self.data = ''.join(['0' for i in range(1024)])
         self.tty = '/dev/ttyACM0'
         self.baud_rate = 19200
-        self.arduino = Serial(self.tty, self.baud_rate)
+        self.bytes_written = 0
+        if self.matrix:
+            self.arduino = Serial(self.tty, self.baud_rate)
 
     def __str__(self):
         display = ''
@@ -57,8 +60,19 @@ class Stream():
 
     def send_to_serial(self):
         for i in range(0,self.lenght-1,8):
-            self.arduino.write(int(self.data[i:i+8],2).to_bytes(1,'little'))
-            sleep(0.001)
+            try:
+                self.arduino.write(int(self.data[i:i+8],2).to_bytes(1,'little'))
+                sleep(0.001)
+                self.bytes_written += 1
+            except KeyboardInterrupt:
+                # TO CORRECT
+                for j in range(i, self.lenght-1,8):
+                    self.arduino.write(int(0).to_bytes(1, 'little'))
+                    sleep(0.001)
+                print('Stream ended')
+                exit()
+        self.bytes_written = 0
+
 
     def __del__(self):
         pass

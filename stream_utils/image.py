@@ -14,9 +14,7 @@ class Image():
             self.auto_size()
 
         elif self.pixmap == None:
-            self.pixmap = [
-                [0 for j in range(self.width)] for i in range(self.height)
-                ]
+            self.blank()
         # Size check
         else:
             if not self.check_width():
@@ -64,6 +62,11 @@ class Image():
         self.height = height
         self.width = width
 
+    def blank(self):
+        self.pixmap = [
+            [0 for j in range(self.width)] for i in range(self.height)
+            ]
+
     def __str__(self):
         return str(self.pixmap)
 
@@ -74,8 +77,12 @@ class Image():
     def get_pixmap(self):
         return self.pixmap
 
+    def set_pixmap(self, pixmap):
+        self.pixmap = pixmap
+
 if __name__ == '__main__':
     table = [[1,1,0,1],[0,1],[0,0,0,0,0,1]]
     lol = Image(width=None, height=None, pixmap=table)
     print(lol)
     troll = Image()
+    print(troll)
