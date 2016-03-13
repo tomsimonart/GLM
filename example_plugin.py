@@ -2,8 +2,8 @@
 
 from os import system
 from time import sleep
-from stream_utils.streamtools import Stream
-from stream_utils.image import Image
+from libs.streamtools import Stream
+from libs.image import Image
 
 class ExamplePlugin(Image):
     def __init__(self):
