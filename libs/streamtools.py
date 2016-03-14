@@ -69,6 +69,7 @@ class Stream():
                 for j in range(i, self.lenght-1,8):
                     self.arduino.write(int(0).to_bytes(1, 'little'))
                     sleep(0.001)
+                sleep(0.02)
                 print('Stream ended')
                 exit()
         self.bytes_written = 0
