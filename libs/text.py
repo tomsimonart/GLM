@@ -33,6 +33,9 @@ class Font:
         self.font[' '] = [[0] * self.whitespace]
 
     def char(self, char):
+        if char not in self.font.keys():
+            print('Font: character not found error [{}]'.format(char))
+            exit()
         return self.font[char]
 
 class Text:
