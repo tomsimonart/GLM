@@ -3,7 +3,7 @@ pbm/*
 !/pbm/sample.pbm
 tests/
 fonts/*
-!/fonts/charmap
+!/fonts/font
 sketch/
 tmp/
 *.sublime-project
