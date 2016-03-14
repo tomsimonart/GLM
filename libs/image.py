@@ -93,15 +93,15 @@ class Image():
             if mode == 'fill':
                 for i in range(y, self.height):
                     for j in range(x, self.width):
-                        self.pixmap[i][j] |= pixmap.get_pixmap()[i][j]
+                        self.pixmap[i][j] |= pixmap.get_pixmap()[i-y][j-x]
             elif mode == 'replace':
                 for i in range(y, self.height):
                     for j in range(x, self.width):
-                        self.pixmap[i][j] = pixmap.get_pixmap()[i][j]
+                        self.pixmap[i][j] = pixmap.get_pixmap()[i-y][j-x]
             elif mode == 'invert':
                 for i in range(y, self.height):
                     for j in range(x, self.width):
-                        self.pixmap[i][j] ^= pixmap.get_pixmap()[i][j]
+                        self.pixmap[i][j] ^= pixmap.get_pixmap()[i-y][j-x]
         except IndexError:
             print('Paste failed: IndexError')
 
@@ -143,11 +143,11 @@ class Image():
 
 if __name__ == '__main__':
     from streamtools import Stream
-    sample = Image(pixmap=[[1,0,1,0,1,0],[0,1,0,1,0,1],[0,0,1,0,1,0,1]])
+    sample = [[1,0,1,0,1,0],[0,1,0,1,0,1],[0,0,1,0,1,0,1]]
     streamer = Stream(matrix=False)
     test = Image(width=64,height=16)
     test.draw_line(7, 7, 63, 15)
     test.draw_dot(60, 3)
-    test.paste(sample, mode='fill')
+    test.paste(sample, mode='fill', x=1, y=1)
     streamer.set_data_from_matrix(test.get_pixmap())
     print(streamer)
