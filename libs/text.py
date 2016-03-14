@@ -71,7 +71,9 @@ class Text:
     def print(self):
         cursor = 0
         for letter in self.text:
-            self.canvas.paste(self.font.char(letter), x=cursor, y=0, mode='fill')
+            self.canvas.paste(
+                self.font.char(letter), x=cursor, y=0, mode='fill'
+                )
             cursor += len(self.font.char(letter)[0]) + self.spacing
         return self.canvas
 
@@ -80,10 +82,13 @@ class Text:
 
 if __name__ == '__main__':
     from streamtools import Stream
-    streamer = Stream(matrix=False)
+    streamer = Stream(matrix=True)
     im = Image()
-    entry = input('Text: ')
-    text = Text(entry.lower())
-    im.paste(text.get_text())
-    streamer.set_data_from_matrix(im.get_pixmap())
-    print(streamer)
+    
+    while True:
+        entry = input('Text: ')
+        text = Text(entry.lower())
+        im.paste(text.get_text(),x=0,y=5)
+        streamer.set_data_from_matrix(im.get_pixmap())
+        streamer.send_to_serial()
+        print(streamer)
