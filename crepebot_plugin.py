@@ -6,17 +6,30 @@ from libs.text import Text
 from libs.image import Image
 from libs import pbmtools
 
-class CrepeBot:
-    def __init__(self, percentage=0):
-        self.percentage = percentage
-        self.percentage_text = Text(str(percentage))
+from os import environ
+#from twisted.internet.defer import inlineCallbacks
+from asyncio import coroutine
+from autobahn.asyncio.wamp import ApplicationSession, ApplicationRunner
+
+class CrepeBot(ApplicationSession):
+    def __init__(self, *args,**kwargs):
+        super(CrepeBot, self).__init__(*args, **kwargs)
+        self.percentage = 0
+        self.percentage_text = Text(str(self.percentage))
         self.pbm = Image()
         self.bar = Image()
         self.bar_x = 40
         self.bar_y = 7
         self.image = Image()
         self.stream = Stream(matrix=True)
-        self.splash = Text('crepe bot')
+        self.splash = Text('crèpe bot')
+
+    @coroutine
+    def onJoin(self, details):
+        def onRefresh(queue):
+            print(queue)
+
+        self.subscribe(onRefresh, 'queue')
 
     def refresh(self, percentage):
         self.percentage = percentage
@@ -29,7 +42,7 @@ class CrepeBot:
 
         self.stream.set_data_from_matrix(self.image.get_pixmap())
         self.stream.send_to_serial()
-        print(self.stream)
+        #print(self.stream)
 
     def refresh_bar(self, percentage):
         if percentage % 5 == 0:
@@ -37,9 +50,9 @@ class CrepeBot:
             self.bar.draw_dot(x=0 + percentage // 5, y=1)
 
 if __name__ == '__main__':
-    from time import sleep
-    plugin = CrepeBot()
-    #sleep(1)
-    for i in range(101):
-        plugin.refresh(i)
-        #sleep(0.1)
+    runner = ApplicationRunner(
+        environ.get("AUTOBAHN_DEMO_ROUTER", u"ws://10.0.0.1:8080/ws"),
+        u"crepinator"
+        #debug=False  # optional; log even more details
+        )
+    runner.run(CrepeBot)
