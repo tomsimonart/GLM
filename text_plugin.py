@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-#Made in one caffeine fueled weekend by Minorias
+#Made in one caffeine fueled weekend by Minorias, editted and improved by Infected
 
 import time
 import os
@@ -20,7 +20,7 @@ class HImage(Stream):
             self.pixels = [
                 [0 for i in range(self.width)] for j in range(self.height)
                 ]
-        
+
         # Matrix with data in it
         else:
             if all(len(pixelmatrix[i]) == len(pixelmatrix[0]) for i in range(len(pixelmatrix))):
@@ -41,19 +41,19 @@ class HImage(Stream):
 
     def __getitem__(self,position):
         x,y = position
-        return self.pixels[y][x]                
+        return self.pixels[y][x]
 
-    
+
     def __setitem__(self,position,value):
         x,y = position
         if value in [1,0]:
             self.pixels[y][x] = value
 
-    
+
     def led_output(self):
         return self.pixels
 
-    
+
     def display(self):
         for y in range(self.height):
             for x in range(self.width):
@@ -63,7 +63,7 @@ class HImage(Stream):
                     print("\033[44m \033[0m", end='')
             print()
 
-    
+
     def normalise(self):
         if self.width != self.matrix_width:
             for i in range(len(self.pixels)):
@@ -71,7 +71,7 @@ class HImage(Stream):
                 while len(self.pixels[i]) < self.matrix_width:
                     self.pixels[i].append(0)
 
-        
+
         if self.height != self.matrix_height:
             self.pixels = self.pixels[:self.matrix_height]
             while len(self.pixels) < self.matrix_height:
@@ -79,10 +79,10 @@ class HImage(Stream):
 
         self.width = len(self.pixels[0])
         self.height = len(self.pixels)
-        
+
         return self
 
-    
+
     def clip(self,x_coord = 0, y_coord = 0, width = 1, height = 1):
         if x_coord + width > self.width:
             # print("Clip you selected is too long,
@@ -99,9 +99,9 @@ class HImage(Stream):
             ] for x in range(width)] for y in range(height)]
         return HImage(pixelmatrix=pix)
 
-    
+
     def paste(self, another_image, x_coord=0, y_coord=0):
-        required_width = x_coord + another_image.width 
+        required_width = x_coord + another_image.width
         required_height = y_coord + another_image.height
 
         for elem in another_image.pixels:
@@ -122,19 +122,19 @@ class HImage(Stream):
                 self.pixels.append([0 for i in range(max(
                     required_width,self.width
                     ))])
-        
+
         print('xhcek', another_image.width, another_image.height)
         for x in range(another_image.width):
             for y in range(another_image.height):
                 self[(x+x_coord, y+y_coord)] = another_image[(x, y)]
         self.width = len(self.pixels[0])
         self.height = len(self.pixels)
-    
-    
+
+
     def insert_before(self,another_image=None,x_coord = 0, y_coord = 0):
         required_height = y_coord + another_image.height
         required_width = self.width + another_image.width + x_coord
-        
+
         if required_height > self.height:
             if required_height > self.matrix_height:
                 print("That thing you're trying to paste is making the matrix "
@@ -143,7 +143,7 @@ class HImage(Stream):
                 self.pixels.append([0 for i in range(max(
                     self.matrix_width,required_width,self.width
                     ))])
-       
+
         for row in self.pixels:
             while len(row) < required_width:
                 row.insert(0,0)
@@ -151,24 +151,24 @@ class HImage(Stream):
         for x in range(another_image.width):
             for y in range(another_image.height):
                 self[(x+x_coord, y+y_coord)] = another_image[(x, y)]
-        
+
         self.width = len(self.pixels[0])
         self.height = len(self.pixels)
 
 
     def insert_above(self, another_image, x_coord=0, y_coord=0,separation=1):
-        required_width = x_coord + another_image.width 
+        required_width = x_coord + another_image.width
         required_height = (
             y_coord +
             another_image.height +
             self.height +
             separation)
-        
+
         if required_width > self.width:
             for line in self.pixels:
                 while len(line) < required_width:
                         line.append(0)
-        
+
         if required_height > self.height:
             if required_height > self.matrix_height:
                 print("That thing you're trying to insert above that other "
@@ -181,9 +181,9 @@ class HImage(Stream):
         for x in range(another_image.width):
             for y in range(another_image.height):
                 self[(x+x_coord, y+y_coord)] = another_image[(x, y)]
-        
+
         self.width = len(self.pixels[0])
-        self.height = len(self.pixels)    
+        self.height = len(self.pixels)
 
     def fun(self):
         #Because why the fuck not?
