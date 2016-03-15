@@ -5,11 +5,11 @@
 # This version is much more simpler as it only allows to add text
 # to an image
 
-from image import Image
+from libs.image import Image
 
 class Font:
     def __init__(self, font_file='font', whitespace=1):
-        self.font_file = '../fonts/' + font_file + '.txt'
+        self.font_file = './fonts/' + font_file + '.txt'
         self.whitespace = whitespace
         self.font = {} # Image array
         self.load_font()
@@ -88,6 +88,7 @@ if __name__ == '__main__':
     while True:
         entry = input('Text: ')
         text = Text(entry.lower())
+        im.blank()
         im.paste(text.get_text(),x=0,y=5)
         streamer.set_data_from_matrix(im.get_pixmap())
         streamer.send_to_serial()

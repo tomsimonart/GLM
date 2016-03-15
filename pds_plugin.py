@@ -84,8 +84,8 @@ class PdsPlugin:
 
     def stream(self):
         self.monitor.set_data_from_matrix(self.get_pixmap())
-        system('clear')
-        print(self.monitor)
+        #system('clear')
+        #print(self.monitor)
         if self.matrix:
             self.monitor.send_to_serial()
 
@@ -134,6 +134,7 @@ if __name__ == '__main__':
         try:
             plugin.stream()
             plugin.blank()
+            sleep(plugin.get_delay())
 
             new_pixmap = plugin.get_pixmap()
             for mouche in mouches:
@@ -144,7 +145,6 @@ if __name__ == '__main__':
             for mouche in mouches:
                 mouche.casse_toi()
 
-            sleep(plugin.get_delay())
         except KeyboardInterrupt:
             print('END')
             exit()
