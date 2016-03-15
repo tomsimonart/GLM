@@ -17,6 +17,7 @@ class Stream():
         self.bytes_written = 0
         if self.matrix:
             self.arduino = Serial(self.tty, self.baud_rate)
+            sleep(2)
 
     def __str__(self):
         display = ''
@@ -62,8 +63,9 @@ class Stream():
         for i in range(0,self.lenght-1,8):
             try:
                 self.arduino.write(int(self.data[i:i+8],2).to_bytes(1,'little'))
-                sleep(0.001)
+                #sleep(0.001)
                 self.bytes_written += 1
+                #print(self.bytes_written)
             except KeyboardInterrupt:
                 # TO CORRECT
                 for j in range(i, self.lenght-1,8):
@@ -73,6 +75,7 @@ class Stream():
                 print('Stream ended')
                 exit()
         self.bytes_written = 0
+        #exit()
 
 
     def __del__(self):
