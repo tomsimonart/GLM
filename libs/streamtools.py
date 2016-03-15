@@ -60,6 +60,8 @@ class Stream():
         return self.data
 
     def send_to_serial(self):
+        if not self.matrix:
+            return 0
         for i in range(0,self.lenght-1,8):
             try:
                 self.arduino.write(int(self.data[i:i+8],2).to_bytes(1,'little'))
