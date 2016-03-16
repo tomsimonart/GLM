@@ -2,21 +2,23 @@
 
 from libs.streamtools import Stream
 
-class Image():
+class Image:
     def __init__(self, width=None, height=None, pixmap=None):
         self.width = width
         self.height = height
         self.pixmap = pixmap # pixmap as matrix
 
         if width == None and height == None and pixmap == None:
-            self.width = 64
-            self.height = 16
+            self.width = 0
+            self.height = 0
+            self.blank()
 
-        if self.height == None or self.width == None:
+        elif self.pixmap != None:
             self.auto_size()
 
-        elif self.pixmap == None:
+        elif self.width != None or self.height != None:
             self.blank()
+
         # Size check
         else:
             if not self.check_width():
@@ -74,9 +76,6 @@ class Image():
     def get_pixmap(self):
         return self.pixmap
 
-    def set_pixmap(self, pixmap):
-        self.pixmap = pixmap
-
     def blank(self):
         self.pixmap = [
             [0 for j in range(self.width)] for i in range(self.height)
@@ -91,15 +90,15 @@ class Image():
             if mode == 'fill':
                 for i in range(y, image.height + y):
                     for j in range(x, image.width+x):
-                        self.pixmap[i][j] |= image.pixmap[i-y][j-x]
+                        self.pixmap[i][j] |= image.get_pixmap()[i-y][j-x]
             elif mode == 'replace':
                 for i in range(y, image.height + y):
                     for j in range(x, image.width + x):
-                        self.pixmap[i][j] = image.pixmap[i-y][j-x]
+                        self.pixmap[i][j] = image.get_pixmap()[i-y][j-x]
             elif mode == 'invert':
                 for i in range(y, image.height + y):
                     for j in range(x, image.width + x):
-                        self.pixmap[i][j] ^= image.pixmap[i-y][j-x]
+                        self.pixmap[i][j] ^= image.get_pixmap()[i-y][j-x]
         except IndexError as e:
             print('')
             #print('Paste failed: IndexError', j, i)

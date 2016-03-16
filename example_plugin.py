@@ -7,24 +7,18 @@ from libs.streamtools import Stream
 
 class ExamplePlugin:
     def __init__(self):
-        self.image = Image()
-        self.screen = Screen(self.image, matrix=False, show=True)
-        self.label = Text('12345')
+        self.screen = Screen(matrix=False, show=True, fps=1)
+        self.label = Text()
         self.drawing = Image(width=10, height=10)
         self.screen.add(self.drawing)
-        self.screen.add(self.label, refresh=False)
-
-        self.streamer = Stream(matrix=False)
-        self.label.resize(64, 16)
-        self.streamer.set_data(self.label)
-        print(self.streamer)
+        self.screen.add(self.label)
 
     def stream(self):
         for i in range(10):
             self.drawing.draw_line(i, 0, 9, i)
-            self.label = Text(str(i))
+            self.label.edit(str(i))
             self.screen.refresh()
 
 if __name__ == '__main__':
     plugin = ExamplePlugin()
-    #plugin.stream()
+    plugin.stream()

@@ -15,7 +15,7 @@ class Font:
         self.load_font()
 
     def load_font(self):
-        file = open(self.font_file, 'r')
+        file = open(self.font_file)
         raw_font = file.readlines()
         for i in range(len(raw_font)):
             if '--' in raw_font[i]:
@@ -38,38 +38,63 @@ class Font:
         return Image(pixmap=self.font[char])
 
 class Text(Image):
-    def __init__(self, text='', spacing=1, font_file='font'):
-        self.font_file = font_file
-        self.spacing = spacing
-        if len(text) <= 0:
-            text = ' '
-        font = Font(font_file)
-        width = self.gen_width(text, font)+len(text)*spacing-spacing
-        height = self.gen_height(text, font)
-        Image.__init__(self, height=height,width=width)
-        self.print(text, spacing, font)
+    DEFAULT_FONT='font'
+    def __init__(self, text='', spacing=1, font=None):
+        super(Image, self).__init__()
+        self.edit(text, spacing)
+        if font == None:
+            font = Text.DEFAULT_FONT
+        self.edit_font(font)
+        self.generate()
 
-    def gen_width(self, text, font):
+    def generate(self):
+        self.width = \
+            self.gen_width() + len(self.text) * self.spacing - self.spacing
+        self.height = self.gen_height()
+        self.blank()
+        self.print()
+
+    def edit(self, text, spacing=1):
+        self.spacing = spacing
+        self.text = text.strip()
+        if self.text == '':
+            self.text = ' '
+
+    def edit_font(self, font=None):
+        if font == None:
+            font = Text.DEFAULT_FONT
+        self.font = Font(font)
+
+    def gen_width(self):
         current_width = []
         width = []
-        for i in text:
-            for j in font.char(i).get_pixmap():
+        for i in self.text:
+            for j in self.font.char(i).get_pixmap():
                 current_width.append(len(j))
             width.append(max(current_width))
             current_width = []
         return sum(width)
 
-    def gen_height(self, text, font):
-        height = [max([len(font.char(i).get_pixmap()) for i in text])]
+    def gen_height(self):
+        height = [
+            max([len(self.font.char(i).get_pixmap()) for i in self.text])
+            ]
         return max(height)
 
-    def print(self, text, spacing, font):
+    def print(self):
         cursor = 0
-        for letter in text:
+        for letter in self.text:
             self.paste(
-                font.char(letter), x=cursor, y=0, mode='fill'
+                self.font.char(letter), x=cursor, y=0, mode='fill'
                 )
-            cursor += len(font.char(letter).get_pixmap()[0]) + spacing
+            cursor += len(
+                self.font.char(letter).get_pixmap()[0]
+                ) + self.spacing
+
+    def get_pixmap(self):
+        self.generate()
+        self.print()
+        return self.pixmap
 
 if __name__ == '__main__':
     pass
