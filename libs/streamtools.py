@@ -4,18 +4,6 @@
 from serial import Serial
 from time import sleep
 
-class Screen:
-    def __init__(self, image):
-        self.streamer = Stream()
-        self.image = image
-        #self.image.resize(64, 16)
-
-    def refresh(self):
-        print(self.image.get_pixmap())
-        self.streamer.set_data(self.image)
-        sleep(1)
-        self.streamer.send_to_serial()
-
 class Stream:
     def __init__(self, matrix=True):
         self.matrix = matrix

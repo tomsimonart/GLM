@@ -38,7 +38,7 @@ class Font:
         return Image(pixmap=self.font[char])
 
 class Text(Image):
-    def __init__(self, text, spacing=1, font_file='font'):
+    def __init__(self, text='', spacing=1, font_file='font'):
         self.font_file = font_file
         self.spacing = spacing
         if len(text) <= 0:
@@ -69,20 +69,7 @@ class Text(Image):
             self.paste(
                 font.char(letter), x=cursor, y=0, mode='fill'
                 )
-            print(font.char(letter).get_pixmap())
             cursor += len(font.char(letter).get_pixmap()[0]) + spacing
 
 if __name__ == '__main__':
     pass
-    #from streamtools import Stream
-    #streamer = Stream(matrix=True)
-    #im = Image()
-    
-    #while True:
-    #    entry = input('Text: ')
-    #    text = Text(entry.lower())
-    #    im.blank()
-    #    im.paste(text.get_text(),x=0,y=5)
-    #    streamer.set_data_from_matrix(im.get_pixmap())
-    #    streamer.send_to_serial()
-    #    print(streamer)
