@@ -1,35 +1,47 @@
 #!/usr/bin/env python3
 
 import tkinter
+from libs.image import Image
+from libs.drawer import Drawer
+from libs.screen import Screen
 
 # INSTRUCTIONS
 # DIFFERENT BRUSHES
+# CLICKING 2 DOTS AND THEN A LINE BETWEEN THEM APPEARS
+# CLICKING 2 DOTS AND A SQUARE BETWEEN THEM APPEARS
+# LIVE UPDATING
 
 
 class MatrixDrawer:
     def __init__(self, x=64, y=16):
-        self.root = tkinter.Tk()
-        self.root.configure(bg="light blue")
-        self.pixmap = [[0 for x in range(x)] for y in range(y)]
+        self.image = Image(width=x, height=y)
+        self.drawer = Drawer(self.image)
+        self.screen = Screen(matrix=True, show=True)
+        self.screen.add(self.image)
+
         self.x = x
         self.y = y
 
+        self.create_window()
         self.create_canvas()
+        self.create_buttons()
+
+    def create_window(self):
+        self.root = tkinter.Tk()
+        self.root.configure(bg="light blue")
 
         self.root.bind("<Button-1>", self.mouseinteract1)
         self.root.bind("<B1-Motion>", self.mouseinteract2)
         self.root.bind("<Button-3>", self.mouseinteract3)
         self.root.bind("<B3-Motion>", self.mouseinteract3)
 
-        self.create_buttons()
-
     def create_canvas(self):
         self.canvasframe = tkinter.Frame(self.root)
         self.canvasframe.pack(side="right")
         square_size = 22
         self.canvas = tkinter.Canvas(self.canvasframe, bg="yellow",
-                                     height=len(self.pixmap)*square_size,
-                                     width=len(self.pixmap[1])*square_size)
+                                     height=self.y*square_size,
+                                     width=self.x*square_size)
 
         self.canvas.grid(row=0, column=0)
 
@@ -121,12 +133,11 @@ class MatrixDrawer:
     def update_pixmap(self):
         for i in range(self.x * self.y):
             if self.canvas.itemcget(i+1, "fill") == "red":
-                self.pixmap[i // self.x][i % self.x] = 1
+                self.drawer.dot(i % self.x, i // self.x)
             else:
-                self.pixmap[i // self.x][i % self.x] = 0
+                self.drawer.erase(i % self.x, i // self.x)
 
-        for elem in self.pixmap:
-            print(elem)
+        self.screen.refresh()
 
 a = MatrixDrawer()
 a.root.mainloop()

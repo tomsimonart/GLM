@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+
 class Drawer:
     def __init__(self, image):
         self.image = image
