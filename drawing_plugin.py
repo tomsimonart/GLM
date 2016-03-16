@@ -2,9 +2,8 @@
 
 import tkinter
 
-# CLEAR BUTTON
 # INSTRUCTIONS
-# FILL ALL BUTTON
+# DIFFERENT BRUSHES
 
 
 class MatrixDrawer:
@@ -49,7 +48,35 @@ class MatrixDrawer:
                                              bg="Yellow",
                                              command=self.update_pixmap
                                              )
+        self.clearbutton = tkinter.Button(self.buttonframe,
+                                          text="Clear All",
+                                          bg="Yellow",
+                                          command=self.clearall
+                                          )
+
+        self.fillbutton = tkinter.Button(self.buttonframe,
+                                         text="Fill All",
+                                         bg="Yellow",
+                                         command=self.fillall
+                                         )
+
         self.terminalbutton.grid(row=0, column=0)
+        self.clearbutton.grid(row=1, column=0)
+        self.fillbutton.grid(row=2, column=0)
+
+    def clearall(self):
+        """
+        Clears all squares, resetting them back to grey
+        """
+        for i in range(self.x * self.y):
+            self.canvas.itemconfig(i+1, fill="grey")
+
+    def fillall(self):
+        """
+        Fills all squares, setting them to red
+        """
+        for i in range(self.x * self.y):
+            self.canvas.itemconfig(i+1, fill="red")
 
     def mouseinteract1(self, event):
         """
@@ -94,7 +121,9 @@ class MatrixDrawer:
     def update_pixmap(self):
         for i in range(self.x * self.y):
             if self.canvas.itemcget(i+1, "fill") == "red":
-                self.pixmap[i // 64][i % 64] = 1
+                self.pixmap[i // self.x][i % self.x] = 1
+            else:
+                self.pixmap[i // self.x][i % self.x] = 0
 
         for elem in self.pixmap:
             print(elem)
