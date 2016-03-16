@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+from libs.streamtools import Stream
+
 class Image():
     def __init__(self, width=None, height=None, pixmap=None):
         self.width = width
@@ -80,30 +82,29 @@ class Image():
             [0 for j in range(self.width)] for i in range(self.height)
             ]
 
-    def paste(self, pixmap, x=0, y=0, mode='fill'):
+    def paste(self, image, x=0, y=0, mode='fill'):
         """ Paste an image over another, can take an image or a matrix
         as pixmap. x=0, y=0 -> Start location of the paste
         mode={fill, replace, invert}
         """
-        if not hasattr(pixmap, 'pixmap'):
-            pixmap = Image(pixmap=pixmap)
-        pixmap.resize(self.width, self.height)
-
+        print(x, y)
+        print(self.width, self.height)
         try:
             if mode == 'fill':
                 for i in range(y, self.height):
                     for j in range(x, self.width):
-                        self.pixmap[i][j] |= pixmap.get_pixmap()[i-y][j-x]
+                        self.pixmap[i][j] |= image.pixmap[i-y][j-x]
             elif mode == 'replace':
                 for i in range(y, self.height):
                     for j in range(x, self.width):
-                        self.pixmap[i][j] = pixmap.get_pixmap()[i-y][j-x]
+                        self.pixmap[i][j] = image.pixmap[i-y][j-x]
             elif mode == 'invert':
                 for i in range(y, self.height):
                     for j in range(x, self.width):
-                        self.pixmap[i][j] ^= pixmap.get_pixmap()[i-y][j-x]
-        except IndexError:
-            print('Paste failed: IndexError')
+                        self.pixmap[i][j] ^= image.pixmap[i-y][j-x]
+        except IndexError as e:
+            print('')
+            #print('Paste failed: IndexError', j, i)
 
     def draw_dot(self, x, y):
         if x < self.width and y < self.height:
