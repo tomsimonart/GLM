@@ -4,13 +4,19 @@ class Drawer:
     def __init__(self, image):
         self.image = image
 
-    def draw_dot(self, x, y):
+    def dot(self, x, y):
         if x < self.image.width and y < self.image.height:
             self.image.pixmap[y][x] = 1
         else:
-            print('draw_dot: outside image', x, y)
+            print('dot: outside image', x, y)
 
-    def draw_line(self, x1, y1, x2, y2):
+    def erase(self, x, y):
+        if x < self.image.width and y < self.image.height:
+            self.image.pixmap[y][x] = 0
+        else:
+            print('erase: outside image', x, y)
+
+    def line(self, x1, y1, x2, y2):
         dx = x2 - x1
         dy = y2 - y1
         is_steep = abs(dy) > abs(dx)
