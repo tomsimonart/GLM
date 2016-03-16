@@ -81,6 +81,11 @@ class Image:
             [0 for j in range(self.width)] for i in range(self.height)
             ]
 
+    def fill(self):
+        self.pixmap = [
+            [1 for j in range(self.width)] for i in range(self.height)
+            ]
+
     def paste(self, image, x=0, y=0, mode='fill'):
         """ Paste an image over another, can take an image or a matrix
         as pixmap. x=0, y=0 -> Start location of the paste
