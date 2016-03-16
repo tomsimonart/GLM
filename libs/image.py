@@ -1,20 +1,24 @@
 #!/usr/bin/env python3
 
-class Image():
+from libs.streamtools import Stream
+
+class Image:
     def __init__(self, width=None, height=None, pixmap=None):
         self.width = width
         self.height = height
         self.pixmap = pixmap # pixmap as matrix
 
         if width == None and height == None and pixmap == None:
-            self.width = 64
-            self.height = 16
+            self.width = 0
+            self.height = 0
+            self.blank()
 
-        if self.height == None or self.width == None:
+        elif self.pixmap != None:
             self.auto_size()
 
-        elif self.pixmap == None:
+        elif self.width != None or self.height != None:
             self.blank()
+
         # Size check
         else:
             if not self.check_width():
@@ -72,74 +76,32 @@ class Image():
     def get_pixmap(self):
         return self.pixmap
 
-    def set_pixmap(self, pixmap):
-        self.pixmap = pixmap
-
     def blank(self):
         self.pixmap = [
             [0 for j in range(self.width)] for i in range(self.height)
             ]
 
-    def paste(self, pixmap, x=0, y=0, mode='fill'):
+    def paste(self, image, x=0, y=0, mode='fill'):
         """ Paste an image over another, can take an image or a matrix
         as pixmap. x=0, y=0 -> Start location of the paste
         mode={fill, replace, invert}
         """
-        if not hasattr(pixmap, 'pixmap'):
-            pixmap = Image(pixmap=pixmap)
-        pixmap.resize(self.width, self.height)
-
         try:
             if mode == 'fill':
-                for i in range(y, self.height):
-                    for j in range(x, self.width):
-                        self.pixmap[i][j] |= pixmap.get_pixmap()[i-y][j-x]
+                for i in range(y, image.height + y):
+                    for j in range(x, image.width+x):
+                        self.pixmap[i][j] |= image.get_pixmap()[i-y][j-x]
             elif mode == 'replace':
-                for i in range(y, self.height):
-                    for j in range(x, self.width):
-                        self.pixmap[i][j] = pixmap.get_pixmap()[i-y][j-x]
+                for i in range(y, image.height + y):
+                    for j in range(x, image.width + x):
+                        self.pixmap[i][j] = image.get_pixmap()[i-y][j-x]
             elif mode == 'invert':
-                for i in range(y, self.height):
-                    for j in range(x, self.width):
-                        self.pixmap[i][j] ^= pixmap.get_pixmap()[i-y][j-x]
-        except IndexError:
-            print('Paste failed: IndexError')
-
-    def draw_dot(self, x, y):
-        if x < self.width and y < self.height:
-            self.pixmap[y][x] = 1
-        else:
-            print('draw_dot: outside image', x, y)
-
-    def draw_line(self, x1, y1, x2, y2):
-        dx = x2 - x1
-        dy = y2 - y1
-        is_steep = abs(dy) > abs(dx)
-        if is_steep:
-            x1, y1 = y1, x1
-            x2, y2 = y2, x2
-        swapped = False
-        if x1 > x2:
-            x1, x2 = x2, x1
-            y1, y2  = y2, y1
-            swapped = True
-        dx = x2 - x1
-        dy = y2 - y1
-        error = int(dx / 2.0)
-        ystep = 1 if y1 < y2 else -1
-        y = y1
-        points = []
-        for x in range(x1, x2 + 1):
-            coord = (y, x) if is_steep else (x,y)
-            points.append(coord)
-            error -= abs(dy)
-            if error < 0:
-                y += ystep
-                error += dx
-        if swapped:
-            points.reverse()
-        for coord in points:
-            self.draw_dot(coord[0], coord[1])
+                for i in range(y, image.height + y):
+                    for j in range(x, image.width + x):
+                        self.pixmap[i][j] ^= image.get_pixmap()[i-y][j-x]
+        except IndexError as e:
+            print('')
+            #print('Paste failed: IndexError', j, i)
 
 if __name__ == '__main__':
     from streamtools import Stream
