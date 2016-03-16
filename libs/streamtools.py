@@ -4,8 +4,7 @@
 from serial import Serial
 from time import sleep
 
-class Stream():
-
+class Stream:
     def __init__(self, matrix=True):
         self.matrix = matrix
         self.byte = bytes(1)
@@ -41,6 +40,12 @@ class Stream():
     def __bytes__(self):
         byte_list = [int(self.data[i:i+8],2)for i in range(0,self.lenght-1,8)]
         return bytes(byte_list)
+
+    def set_data(self, data):
+        if not hasattr(data, 'get_pixmap'):
+            return 0
+        else:
+            self.set_data_from_matrix(data.get_pixmap())
 
     def set_data_from_raw(self, data):
         """Fastest solution if the data is in a stripped string format"""
