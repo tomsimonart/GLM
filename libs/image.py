@@ -87,20 +87,18 @@ class Image():
         as pixmap. x=0, y=0 -> Start location of the paste
         mode={fill, replace, invert}
         """
-        print(x, y)
-        print(self.width, self.height)
         try:
             if mode == 'fill':
-                for i in range(y, self.height):
-                    for j in range(x, self.width):
+                for i in range(y, image.height + y):
+                    for j in range(x, image.width+x):
                         self.pixmap[i][j] |= image.pixmap[i-y][j-x]
             elif mode == 'replace':
-                for i in range(y, self.height):
-                    for j in range(x, self.width):
+                for i in range(y, image.height + y):
+                    for j in range(x, image.width + x):
                         self.pixmap[i][j] = image.pixmap[i-y][j-x]
             elif mode == 'invert':
-                for i in range(y, self.height):
-                    for j in range(x, self.width):
+                for i in range(y, image.height + y):
+                    for j in range(x, image.width + x):
                         self.pixmap[i][j] ^= image.pixmap[i-y][j-x]
         except IndexError as e:
             print('')
