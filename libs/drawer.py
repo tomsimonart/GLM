@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-
 class Drawer:
     def __init__(self, image):
         self.image = image
@@ -45,4 +44,4 @@ class Drawer:
         if swapped:
             points.reverse()
         for coord in points:
-            self.draw_dot(coord[0], coord[1])
+            self.dot(coord[0], coord[1])
