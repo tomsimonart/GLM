@@ -7,7 +7,6 @@ from libs.image import Image
 from libs import pbmtools
 
 from os import environ
-#from twisted.internet.defer import inlineCallbacks
 from asyncio import coroutine
 from autobahn.asyncio.wamp import ApplicationSession, ApplicationRunner
 
@@ -20,8 +19,8 @@ class CrepeBot(ApplicationSession):
         self.splash = Text('init v1.0')
         self.percentage_text = Text('0')
         self.bar_x = 40
-
         self.bar_y = 7
+
         self.screen.add(self.pbm, 0, 0, False)
         self.screen.add(self.bar, self.bar_x, self.bar_y, True)
         self.screen.add(self.splash, 25, 0, True)
