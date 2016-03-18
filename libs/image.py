@@ -89,19 +89,21 @@ class Image:
         try:
             if mode == 'fill':
                 for i in range(y, image.height + y):
-                    for j in range(x, image.width+x):
-                        self.pixmap[i][j] |= image.get_pixmap()[i-y][j-x]
+                    for j in range(x, image.width + x):
+                        if i < self.height and j < self.width:
+                            self.pixmap[i][j] |= image.get_pixmap()[i-y][j-x]
             elif mode == 'replace':
                 for i in range(y, image.height + y):
                     for j in range(x, image.width + x):
-                        self.pixmap[i][j] = image.get_pixmap()[i-y][j-x]
+                        if i < self.height and j < self.width:
+                            self.pixmap[i][j] = image.get_pixmap()[i-y][j-x]
             elif mode == 'invert':
                 for i in range(y, image.height + y):
                     for j in range(x, image.width + x):
-                        self.pixmap[i][j] ^= image.get_pixmap()[i-y][j-x]
+                        if i < self.height and j < self.width:
+                            self.pixmap[i][j] ^= image.get_pixmap()[i-y][j-x]
         except IndexError as e:
-            print('')
-            #print('Paste failed: IndexError', j, i)
+            print('paste:',e, i,j, x,y)
 
 if __name__ == '__main__':
     from streamtools import Stream
