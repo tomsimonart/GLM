@@ -41,11 +41,7 @@ class Text(Image):
     DEFAULT_FONT='font'
     def __init__(self, text='', spacing=1, font=None):
         super(Image, self).__init__()
-        self.edit(text, spacing)
-        if font == None:
-            font = Text.DEFAULT_FONT
-        self.edit_font(font)
-        self.generate()
+        self.edit(text, spacing, font)
 
     def generate(self):
         self.width = \
@@ -54,11 +50,21 @@ class Text(Image):
         self.blank()
         self.print()
 
-    def edit(self, text, spacing=1):
+    def edit(self, text, spacing=1, font=None):
         self.spacing = spacing
-        self.text = text.strip()
+        self.text = text.strip('\n')
         if self.text == '':
             self.text = ' '
+
+        if font == None:
+            font = Text.DEFAULT_FONT
+
+        if not hasattr(self, 'font'): # Load font once
+            self.edit_font(font)
+        elif self.font.font_file != './fonts/' + font + '.txt':
+            self.edit_font(font)
+
+        self.generate()
 
     def edit_font(self, font=None):
         if font == None:
