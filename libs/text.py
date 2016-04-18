@@ -55,9 +55,15 @@ class Text(Image):
         self.text = text.strip('\n')
         if self.text == '':
             self.text = ' '
+
         if font == None:
             font = Text.DEFAULT_FONT
-        self.edit_font(font)
+
+        if not hasattr(self, 'font'): # Load font once
+            self.edit_font(font)
+        elif self.font.font_file != './fonts/' + font + '.txt':
+            self.edit_font(font)
+
         self.generate()
 
     def edit_font(self, font=None):
