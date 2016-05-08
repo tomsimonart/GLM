@@ -21,3 +21,6 @@ if __name__ == '__main__':
     print(c)
     c.resize(4, 7)
     print(c.pixmap)
+
+    a.set_pixmap([2])
+    print(a)

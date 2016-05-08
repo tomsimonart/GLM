@@ -39,10 +39,25 @@ class Image:
 
         # Size check
         else:
-            if not self.check_width():
+            if not self.check_width(self.pixmap):
                 self.fill_width()
-            if not self.check_height():
+            if not self.check_height(self.pixmap):
                 self.fill_height()
+
+    def __is_pixmap(self, pixmap):
+        if type(pixmap) is list:
+            if type(pixmap[0]) is list:
+                for i in pixmap:
+                    for j in i:
+                        if j != 0 and j != 1:
+                            msg("pixmap wrong data !(1|0)", 3, "Image", j, i)
+                            exit()
+            else:
+                msg("pixmap is not a matrix", 3, "Image", type(pixmap[0]))
+                exit()
+        else:
+            msg("pixmap is not a matrix", 3, "Image", type(pixmap))
+            exit()
 
     def auto_size(self):
         self.width = max([len(i) for i in self.pixmap])
@@ -50,16 +65,24 @@ class Image:
         self.fill_width()
         self.fill_height()
 
-    def check_width(self):
-        return all(len(i) == self.width for i in self.pixmap)
+    def check_width(self, pixmap):
+        return all(len(i) == self.width for i in pixmap)
+
+    def get_pixmap_width(self, pixmap):
+        """Get the width of a pixmap"""
+        return max(len(i) for i in pixmap)
 
     def fill_width(self):
         self.pixmap = [
             i[:self.width] + [0] * (self.width - len(i)) for i in self.pixmap
             ]
 
-    def check_height(self):
-        return len(self.pixmap) == self.height
+    def check_height(self, pixmap):
+        return len(pixmap) == self.height
+
+    def get_pixmap_height(self, pixmap):
+        """Get the height of a pixmap"""
+        return len(pixmap)
 
     def fill_height(self):
         if len(self.pixmap) < self.height:
@@ -97,6 +120,18 @@ class Image:
     def get_pixmap(self):
         """Get the Image data"""
         return self.pixmap
+
+    def set_pixmap(self, pixmap):
+        """Set a new pixmap and check for width and height"""
+        self.__is_pixmap(pixmap)
+        pixmap_height = self.get_pixmap_height(pixmap)
+        pixmap_width = self.get_pixmap_width(pixmap)
+        if pixmap_height > self.height:
+            msg("pixmap too high", 2, "Image.set_pixmap()", pixmap_height)
+        if pixmap_width > self.width:
+            msg("pixmap too large", 2, "Image.set_pixmap()", pixmap_width)
+        self.pixmap = pixmap
+        self.resize(self.width, self.height)
 
     def blank(self):
         """Clear the Image"""
