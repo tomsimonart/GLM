@@ -1,22 +1,40 @@
 #!/usr/bin/env python3
 
 from libs.streamtools import Stream
+from libs.rainbow import msg
+
 
 class Image:
+    """
+    An Image has a width a height and a boolean pixmap (matrix).
+    All parameters are optional.
+
+    You can specify the width and the height without pixmap.
+    If you give a pixmap only, the Image will be autosized even if the sizes
+    are not equal.
+
+    Keyword arguments:
+    width -- Image width (default None)
+    height -- Image height (default None)
+    pixmap -- matrix of binary data (default None)
+    """
     def __init__(self, width=None, height=None, pixmap=None):
         self.width = width
         self.height = height
-        self.pixmap = pixmap # pixmap as matrix
+        self.pixmap = pixmap  # pixmap as matrix
 
-        if width == None and height == None and pixmap == None:
+        if width is None and height is None and pixmap is None:
             self.width = 0
             self.height = 0
             self.blank()
 
-        elif self.pixmap != None:
+        elif width is not None and height is not None and pixmap is not None:
+            self.resize(width, height)
+
+        elif self.pixmap is not None:
             self.auto_size()
 
-        elif self.width != None or self.height != None:
+        elif self.width is not None or self.height is not None:
             self.blank()
 
         # Size check
@@ -45,12 +63,15 @@ class Image:
 
     def fill_height(self):
         if len(self.pixmap) < self.height:
-            self.pixmap = \
-            self.pixmap + [[0] * self.width] * (self.height - len(self.pixmap))
+            self.pixmap = (
+                self.pixmap +
+                [[0] * self.width] * (self.height - len(self.pixmap)))
         else:
             self.pixmap = self.pixmap[0:self.height]
 
     def resize(self, width, height):
+        """Resize Image"""
+        self.auto_size()
         # Height
         if height < self.height:
             self.pixmap = self.pixmap[0:height]
@@ -74,14 +95,17 @@ class Image:
         return str(''.join(map(str, data)))
 
     def get_pixmap(self):
+        """Get the Image data"""
         return self.pixmap
 
     def blank(self):
+        """Clear the Image"""
         self.pixmap = [
             [0 for j in range(self.width)] for i in range(self.height)
             ]
 
     def fill(self):
+        """Fill the Image"""
         self.pixmap = [
             [1 for j in range(self.width)] for i in range(self.height)
             ]
@@ -108,15 +132,4 @@ class Image:
                         if i < self.height and j < self.width:
                             self.pixmap[i][j] ^= image.get_pixmap()[i-y][j-x]
         except IndexError as e:
-            print('paste:',e, i,j, x,y)
-
-if __name__ == '__main__':
-    from streamtools import Stream
-    sample = [[1,0,1,0,1,0],[0,1,0,1,0,1],[0,0,1,0,1,0,1]]
-    streamer = Stream(matrix=False)
-    test = Image(width=64,height=16)
-    test.draw_line(7, 7, 63, 15)
-    test.draw_dot(60, 3)
-    test.paste(sample, mode='fill', x=1, y=1)
-    streamer.set_data_from_matrix(test.get_pixmap())
-    print(streamer)
+            msg("paste error", 2, "Image.paste()")

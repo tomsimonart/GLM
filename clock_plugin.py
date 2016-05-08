@@ -8,6 +8,7 @@ from datetime import datetime
 from os import system
 from time import sleep
 
+
 class ClockPlugin:
     def __init__(self):
         self.author = 'Infected'
@@ -21,10 +22,11 @@ class ClockPlugin:
         self.invert = Image(64, 16)
         self.invert.fill()
 
-        self.screen = Screen(matrix=True, show=False, fps=150)
+        self.screen = Screen(matrix=False, show=True, fps=15)
         self.screen.add(self.time_frame, refresh=True)
+        self.screen.add(self.timer, refresh=True, x=3, y=3)
         self.screen.add(self.canvas, refresh=False)
-        #self.screen.add(self.invert, mode='invert', refresh=False)
+        # self.screen.add(self.invert, mode='invert', refresh=False)
 
         self.gen_canvas()
 
@@ -47,7 +49,6 @@ class ClockPlugin:
             str(self.time.minute).zfill(2),
             str(self.time.second).zfill(2)),
             font='fontbignum')
-        self.time_frame.paste(self.timer, x=3, y=3)
 
     def stream(self):
         self.refresh()
