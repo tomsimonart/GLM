@@ -78,3 +78,6 @@ target/
 
 # virtualenv
 ve3/
+
+# profiler
+.lprof
