@@ -3,7 +3,7 @@ from libs.image import Image
 from libs.drawer import Drawer
 from libs.screen import Screen
 from libs.text import Text
-from libs.rainbow import color, msg
+from libs.rainbow import msg, color
 
 if __name__ == '__main__':
     scr = Screen(matrix=False, show=True)

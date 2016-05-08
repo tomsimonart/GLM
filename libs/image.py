@@ -32,6 +32,7 @@ class Image:
             self.resize(width, height)
 
         elif self.pixmap is not None:
+            self.is_pixmap(self.pixmap)
             self.auto_size()
 
         elif self.width is not None or self.height is not None:
@@ -44,7 +45,11 @@ class Image:
             if not self.check_height(self.pixmap):
                 self.fill_height()
 
-    def __is_pixmap(self, pixmap):
+    def is_pixmap(self, pixmap):
+        """
+        Check if the given pixmap has a pixmap format.
+        Tell you what is wrong and kill the program if it is not the case.
+        """
         if type(pixmap) is list:
             if type(pixmap[0]) is list:
                 for i in pixmap:
@@ -60,12 +65,16 @@ class Image:
             exit()
 
     def auto_size(self):
+        """Auto fill width and height"""
         self.width = max([len(i) for i in self.pixmap])
         self.height = len(self.pixmap)
         self.fill_width()
         self.fill_height()
 
     def check_width(self, pixmap):
+        """
+        Check if the width of the image is the same as the width of the pixmap
+        """
         return all(len(i) == self.width for i in pixmap)
 
     def get_pixmap_width(self, pixmap):
@@ -73,11 +82,16 @@ class Image:
         return max(len(i) for i in pixmap)
 
     def fill_width(self):
+        """Fills the remaining width of the pixmap with 0"""
         self.pixmap = [
             i[:self.width] + [0] * (self.width - len(i)) for i in self.pixmap
             ]
 
     def check_height(self, pixmap):
+        """
+        Check if the height of the image is the same as the height of the
+        pixmap
+        """
         return len(pixmap) == self.height
 
     def get_pixmap_height(self, pixmap):
@@ -85,6 +99,7 @@ class Image:
         return len(pixmap)
 
     def fill_height(self):
+        """Fills the remaining height of the pixmap with 0"""
         if len(self.pixmap) < self.height:
             self.pixmap = (
                 self.pixmap +
@@ -123,7 +138,7 @@ class Image:
 
     def set_pixmap(self, pixmap):
         """Set a new pixmap and check for width and height"""
-        self.__is_pixmap(pixmap)
+        self.is_pixmap(pixmap)
         pixmap_height = self.get_pixmap_height(pixmap)
         pixmap_width = self.get_pixmap_width(pixmap)
         if pixmap_height > self.height:
@@ -146,9 +161,14 @@ class Image:
             ]
 
     def paste(self, image, x=0, y=0, mode='fill'):
-        """ Paste an image over another, can take an image or a matrix
-        as pixmap. x=0, y=0 -> Start location of the paste
-        mode={fill, replace, invert}
+        """
+        Paste an Image over another, can take an image or a pixmap.
+
+        Keyword arguments:
+        image -- Image
+        x -- x location (default 0)
+        y -- y location (default 0)
+        mode -- paste mode ['fill', 'replace', 'invert'] (default 'fill')
         """
         try:
             if mode == 'fill':
@@ -167,4 +187,4 @@ class Image:
                         if i < self.height and j < self.width:
                             self.pixmap[i][j] ^= image.get_pixmap()[i-y][j-x]
         except IndexError as e:
-            msg("paste error", 2, "Image.paste()")
+            msg("paste error", 2, "Image.paste()", j, i)
