@@ -31,7 +31,6 @@ class LoadPlugin:
         msg("Done", 0, "Download", "100%")
 
 
-
 if __name__ == '__main__':
     plugin = LoadPlugin()
     plugin.stream()
