@@ -195,8 +195,8 @@ class Image:
         elif mode == 'modulo':
             for i in range(y, image.height + y):
                 for j in range(x, image.width + x):
-                    self.pixmap[i % self.height][j % self.width] |=
-                    image.get_pixmap()[i-y][j-x]
+                    self.pixmap[i % self.height][j % self.width] |= (
+                        image.get_pixmap()[i-y][j-x])
 
         else:
             msg("no such paste mode", 2, "Image.paste()", mode)
