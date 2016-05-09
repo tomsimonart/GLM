@@ -8,24 +8,23 @@ from libs.drawer import Drawer
 from libs.screen import Screen
 
 # INSTRUCTIONS
-# DIFFERENT BRUSHES
-# CLICKING 2 DOTS AND THEN A LINE BETWEEN THEM APPEARS
-# CLICKING 2 DOTS AND A pixel BETWEEN THEM APPEARS
-# WRITING TEXT
+#   CLICKING 2 DOTS AND THEN A LINE BETWEEN THEM APPEARS
+#   CLICKING 2 DOTS AND A SQUARE BETWEEN THEM APPEARS
+#   WRITING TEXT
+#   SAVING / LOADING AN IMAGE
 
 
-class Updater(threading.Thread):
+class Updater():
     def __init__(self, interface):
-        threading.Thread.__init__(self)
         self.interface = interface
-        self.screen = Screen(matrix=False, show=True, fps=50)
-        self.screen.add(self.inteface.image, refresh=False)
+        self.screen = Screen(matrix=True, show=False, fps=50)
+        self.screen.add(self.interface.image, refresh=False)
         self.livestream = False
 
     def one_refresh(self):
         self.screen.refresh()
 
-    def livestream(self):
+    def toggle_livestream(self):
         if self.livestream is True:
             self.livestream = False
         else:
@@ -38,8 +37,6 @@ class MatrixDrawer:
     def __init__(self, x=64, y=16):
         self.image = Image(width=x, height=y)
         self.drawer = Drawer(self.image)
-        self.screen = Screen(matrix=True, show=True, fps=50)
-        self.screen.add(self.image, refresh=False)
 
         self.x = x
         self.y = y
@@ -100,11 +97,30 @@ class MatrixDrawer:
                                          bg="Yellow",
                                          command=self.togglelive
                                          )
+        self.drawbutton = tkinter.Button(self.buttonframe,
+                                         text="Draw Mode",
+                                         bg="Yellow",
+                                         command=self.toggleerase
+                                         )
+        self.erasebutton = tkinter.Button(self.buttonframe,
+                                          text="Erase Mode",
+                                          bg="Yellow",
+                                          command=self.toggledraw
+                                          )
 
         self.terminalbutton.grid(row=0, column=0, columnspan=2)
         self.clearbutton.grid(row=1, column=0, columnspan=2)
         self.fillbutton.grid(row=2, column=0, columnspan=2)
         self.livebutton.grid(row=3, column=0, columnspan=2)
+        self.drawbutton.grid(row=4, column=0)
+        self.erasebutton.grid(row=4, column=1)
+
+    def toggledraw(self):
+        self.drawmode = True
+        # self.drawbutton.configure(relief=)
+
+    def toggleerase(self):
+        self.drawmode = False
 
     def togglelive(self):
         if self.live:   # we were already live, going manual now
@@ -165,7 +181,13 @@ class MatrixDrawer:
                 self.drawer.dot(i % self.x, i // self.x)
             else:
                 self.drawer.erase(i % self.x, i // self.x)
+
         self.screen.refresh()
 
+
 a = MatrixDrawer()
+b = Updater(a)
+thread1 = threading.Thread(target=b.toggle_livestream)
+thread1.start()
 a.root.mainloop()
+b.livestream = False
