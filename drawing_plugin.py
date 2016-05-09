@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 import tkinter
+import threading
+import time
 from libs.image import Image
 from libs.drawer import Drawer
 from libs.screen import Screen
@@ -10,6 +12,26 @@ from libs.screen import Screen
 # CLICKING 2 DOTS AND THEN A LINE BETWEEN THEM APPEARS
 # CLICKING 2 DOTS AND A pixel BETWEEN THEM APPEARS
 # WRITING TEXT
+
+
+class Updater(threading.Thread):
+    def __init__(self, interface):
+        threading.Thread.__init__(self)
+        self.interface = interface
+        self.screen = Screen(matrix=False, show=True, fps=50)
+        self.screen.add(self.inteface.image, refresh=False)
+        self.livestream = False
+
+    def one_refresh(self):
+        self.screen.refresh()
+
+    def livestream(self):
+        if self.livestream is True:
+            self.livestream = False
+        else:
+            self.livestream = True
+            while self.livestream:
+                self.screen.refresh()
 
 
 class MatrixDrawer:
@@ -22,6 +44,7 @@ class MatrixDrawer:
         self.x = x
         self.y = y
         self.live = False
+        self.drawmode = True
 
         self.create_window()
         self.create_canvas()
@@ -31,15 +54,15 @@ class MatrixDrawer:
         self.root = tkinter.Tk()
         self.root.configure(bg="light blue")
 
-        self.root.bind("<Button-1>", self.mouseinteract1)
-        self.root.bind("<B1-Motion>", self.mouseinteract2)
-        self.root.bind("<Button-3>", self.mouseinteract3)
-        self.root.bind("<B3-Motion>", self.mouseinteract3)
+        self.root.bind("<Button-1>", self.mouse_interact_left)
+        self.root.bind("<B1-Motion>", self.mouse_interact_left)
+        self.root.bind("<Button-3>", self.mouse_interact_right)
+        self.root.bind("<B3-Motion>", self.mouse_interact_right)
 
     def create_canvas(self):
         self.canvasframe = tkinter.Frame(self.root)
         self.canvasframe.pack(side="right")
-        pixel_size = 22
+        pixel_size = 20
         self.canvas = tkinter.Canvas(self.canvasframe, bg="black",
                                      height=self.y*pixel_size,
                                      width=self.x*pixel_size)
@@ -78,10 +101,10 @@ class MatrixDrawer:
                                          command=self.togglelive
                                          )
 
-        self.terminalbutton.grid(row=0, column=0, columnspan=3)
-        self.clearbutton.grid(row=1, column=0, columnspan=3)
-        self.fillbutton.grid(row=2, column=0, columnspan=3)
-        self.livebutton.grid(row=3, column=0, columnspan=3)
+        self.terminalbutton.grid(row=0, column=0, columnspan=2)
+        self.clearbutton.grid(row=1, column=0, columnspan=2)
+        self.fillbutton.grid(row=2, column=0, columnspan=2)
+        self.livebutton.grid(row=3, column=0, columnspan=2)
 
     def togglelive(self):
         if self.live:   # we were already live, going manual now
@@ -95,7 +118,7 @@ class MatrixDrawer:
     def live_update(self):
         if self.live:
             self.screen.refresh()
-            self.root.after(50, self.live_update)
+            self.root.after(150, self.live_update)
 
     def clearall(self):
         """
@@ -115,49 +138,26 @@ class MatrixDrawer:
 
         self.image.fill()
 
-    def mouseinteract1(self, event):
-        """
-        For Left-click
-        Write/Erase
-        """
+    def mouse_interact_left(self, event):
         if event.widget.winfo_id() == self.canvas.winfo_id():
             x = self.canvas.canvasx(event.x)
             y = self.canvas.canvasy(event.y)
 
             pixel = self.canvas.find_closest(x, y)
 
-            if self.canvas.itemcget(pixel, "fill") == "grey":
-                self.canvas.itemconfig(pixel, fill="red")
-                self.drawer.dot((pixel[0]-1) % self.x, (pixel[0] - 1) // self.x)
-            else:
-                self.canvas.itemconfig(pixel, fill="grey")
-                self.drawer.erase((pixel[0]-1) % self.x, (pixel[0] - 1) // self.x)
-
-    def mouseinteract2(self, event):
-        """
-        For Left-Drag
-        Write
-        """
-        if event.widget.winfo_id() == self.canvas.winfo_id():
-            x = self.canvas.canvasx(event.x)
-            y = self.canvas.canvasy(event.y)
-
-            pixel = self.canvas.find_closest(x, y)
             self.canvas.itemconfig(pixel, fill="red")
-            self.drawer.dot((pixel[0]-1) % self.x, (pixel[0] - 1) // self.x)
+            self.drawer.dot((pixel[0]-1) % self.x,
+                            (pixel[0] - 1) // self.x)
 
-    def mouseinteract3(self, event):
-        """
-        For Right-click / Right-Drag
-        Erase
-        """
+    def mouse_interact_right(self, event):
         if event.widget.winfo_id() == self.canvas.winfo_id():
             x = self.canvas.canvasx(event.x)
             y = self.canvas.canvasy(event.y)
 
             pixel = self.canvas.find_closest(x, y)
             self.canvas.itemconfig(pixel, fill="grey")
-            self.drawer.erase((pixel[0]-1) % self.x, (pixel[0] - 1) // self.x)
+            self.drawer.erase((pixel[0]-1) % self.x,
+                              (pixel[0] - 1) // self.x)
 
     def update_pixmap(self):
         for i in range(self.x * self.y):
@@ -165,7 +165,6 @@ class MatrixDrawer:
                 self.drawer.dot(i % self.x, i // self.x)
             else:
                 self.drawer.erase(i % self.x, i // self.x)
-
         self.screen.refresh()
 
 a = MatrixDrawer()
