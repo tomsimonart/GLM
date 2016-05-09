@@ -168,23 +168,35 @@ class Image:
         image -- Image
         x -- x location (default 0)
         y -- y location (default 0)
-        mode -- paste mode ['fill', 'replace', 'invert'] (default 'fill')
+        mode -- paste mode (default 'fill')
+            ['fill', 'replace', 'invert', 'modulo']
         """
-        try:
-            if mode == 'fill':
-                for i in range(y, image.height + y):
-                    for j in range(x, image.width + x):
-                        if i < self.height and j < self.width:
+        if mode == 'fill':
+            for i in range(y, image.height + y):
+                for j in range(x, image.width + x):
+                    if i < self.height and j < self.width:
+                        if i >= 0 and j >= 0:
                             self.pixmap[i][j] |= image.get_pixmap()[i-y][j-x]
-            elif mode == 'replace':
-                for i in range(y, image.height + y):
-                    for j in range(x, image.width + x):
-                        if i < self.height and j < self.width:
+
+        elif mode == 'replace':
+            for i in range(y, image.height + y):
+                for j in range(x, image.width + x):
+                    if i < self.height and j < self.width:
+                        if i >= 0 and j >= 0:
                             self.pixmap[i][j] = image.get_pixmap()[i-y][j-x]
-            elif mode == 'invert':
-                for i in range(y, image.height + y):
-                    for j in range(x, image.width + x):
-                        if i < self.height and j < self.width:
+
+        elif mode == 'invert':
+            for i in range(y, image.height + y):
+                for j in range(x, image.width + x):
+                    if i < self.height and j < self.width:
+                        if i >= 0 and j >= 0:
                             self.pixmap[i][j] ^= image.get_pixmap()[i-y][j-x]
-        except IndexError as e:
-            msg("paste error", 2, "Image.paste()", j, i)
+
+        elif mode == 'modulo':
+            for i in range(y, image.height + y):
+                for j in range(x, image.width + x):
+                    self.pixmap[i % self.height][j % self.width] |=
+                    image.get_pixmap()[i-y][j-x]
+
+        else:
+            msg("no such paste mode", 2, "Image.paste()", mode)
