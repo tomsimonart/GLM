@@ -1,6 +1,6 @@
 from libs.streamtools import Stream
 from libs.image import Image
-from libs.rainbow import color
+from libs.rainbow import color, msg
 from os import system
 from time import sleep
 from sys import argv
@@ -31,18 +31,19 @@ class Screen:
             height=MAT_HEIGHT,
             matrix=True,
             show=False,
-            fps=0):
+            fps=0,
+            tty='/dev/ttyACM0'):
 
         if fps > 0:
             self.fps = 1 / fps
         else:
             self.fps = 0
         self.image = Image(width=width, height=height)
-        self.streamer = Stream(matrix=matrix)
+        self.streamer = Stream(matrix=matrix, tty=tty)
         self.show = show
         self.childs = []
 
-    def add(self, image, x=0, y=0, refresh=True, mode="fill", name="Child"):
+    def add(self, element, x=0, y=0, refresh=True, mode="fill", name="Child"):
         """
         Add a new Image to the childs.
 
@@ -54,7 +55,22 @@ class Screen:
         mode -- paste mode [Image.paste()] (default "fill")
         name -- name (default "Child")
         """
-        self.childs.append((image, x, y, refresh, mode, name))
+        if str(type(element)) == "<class 'libs.slide.Slide'>":
+            self.childs.append((element.view, x, y, refresh, mode, name))
+        elif str(type(element)) == "<class 'libs.text.Text'>":
+            self.childs.append((element, x, y, refresh, mode, name))
+        elif str(type(element)) == "<class 'libs.image.Image'>":
+            self.childs.append((element, x, y, refresh, mode, name))
+        else:
+            msg("not a valid element", 2, "Screen.add()", type(element))
+
+    def remove(self, id_):
+        """Delete a child by his id"""
+        if id_ <= len(self.childs) - 1:
+            msg(self.childs.pop(id_)[5], 0, "Removed")
+        else:
+            msg("no such child", 2, "Screen.remove()", len(self.childs), id_)
+
 
     def refresh(self):
         """

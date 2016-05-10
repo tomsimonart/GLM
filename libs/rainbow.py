@@ -71,7 +71,7 @@ ERROR = color('⚑', 'RED')
 FATAL = color('⌁', 'RED', False, None, 'INVERT')
 
 
-def msg(message, priority=0, function=None):
+def msg(message, priority=0, function=None, *data):
     if priority <= 0:
         # status
         mode = STATUS
@@ -88,7 +88,6 @@ def msg(message, priority=0, function=None):
         # Fatal
         mode = FATAL
         message = color(message, 'RED', False, None, 'invert')
-        #print(FATAL, color(function, 'YELLOW', False), message)
 
     print(mode, end=" ")
 
@@ -97,4 +96,9 @@ def msg(message, priority=0, function=None):
         function += ": "
         print(color(function, function_color), end="")
 
-    print(message)
+    print(message, end="")
+    if data is not ():
+        print("\t" + color("|", 'YELLOW'), end="")
+        print(color(" " + str(list(data)), "MAGENTA"))
+    else:
+        print()

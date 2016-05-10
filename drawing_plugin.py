@@ -1,26 +1,47 @@
 #!/usr/bin/env python3
 
 import tkinter
+import threading
+import time
 from libs.image import Image
 from libs.drawer import Drawer
 from libs.screen import Screen
 
 # INSTRUCTIONS
-# DIFFERENT BRUSHES
-# CLICKING 2 DOTS AND THEN A LINE BETWEEN THEM APPEARS
-# CLICKING 2 DOTS AND A SQUARE BETWEEN THEM APPEARS
-# LIVE UPDATING
+#   CLICKING 2 DOTS AND THEN A LINE BETWEEN THEM APPEARS
+#   CLICKING 2 DOTS AND A SQUARE BETWEEN THEM APPEARS
+#   WRITING TEXT
+#   SAVING / LOADING AN IMAGE
+
+
+class Updater():
+    def __init__(self, interface):
+        self.interface = interface
+        self.screen = Screen(matrix=True, show=False, fps=50)
+        self.screen.add(self.interface.image, refresh=False)
+        self.livestream = False
+
+    def one_refresh(self):
+        self.screen.refresh()
+
+    def toggle_livestream(self):
+        if self.livestream is True:
+            self.livestream = False
+        else:
+            self.livestream = True
+            while self.livestream:
+                self.screen.refresh()
 
 
 class MatrixDrawer:
     def __init__(self, x=64, y=16):
         self.image = Image(width=x, height=y)
         self.drawer = Drawer(self.image)
-        self.screen = Screen(matrix=True, show=True)
-        self.screen.add(self.image)
 
         self.x = x
         self.y = y
+        self.live = False
+        self.drawmode = True
 
         self.create_window()
         self.create_canvas()
@@ -30,30 +51,30 @@ class MatrixDrawer:
         self.root = tkinter.Tk()
         self.root.configure(bg="light blue")
 
-        self.root.bind("<Button-1>", self.mouseinteract1)
-        self.root.bind("<B1-Motion>", self.mouseinteract2)
-        self.root.bind("<Button-3>", self.mouseinteract3)
-        self.root.bind("<B3-Motion>", self.mouseinteract3)
+        self.root.bind("<Button-1>", self.mouse_interact_left)
+        self.root.bind("<B1-Motion>", self.mouse_interact_left)
+        self.root.bind("<Button-3>", self.mouse_interact_right)
+        self.root.bind("<B3-Motion>", self.mouse_interact_right)
 
     def create_canvas(self):
         self.canvasframe = tkinter.Frame(self.root)
         self.canvasframe.pack(side="right")
-        square_size = 22
-        self.canvas = tkinter.Canvas(self.canvasframe, bg="yellow",
-                                     height=self.y*square_size,
-                                     width=self.x*square_size)
+        pixel_size = 20
+        self.canvas = tkinter.Canvas(self.canvasframe, bg="black",
+                                     height=self.y*pixel_size,
+                                     width=self.x*pixel_size)
 
         self.canvas.grid(row=0, column=0)
 
         for y in range(self.y):
             for x in range(self.x):
-                self.canvas.create_rectangle(x*square_size, y*square_size,
-                                             x*square_size + square_size,
-                                             y*square_size + square_size,
-                                             fill="grey")
+                self.canvas.create_oval(x*pixel_size, y*pixel_size,
+                                        x*pixel_size + pixel_size,
+                                        y*pixel_size + pixel_size,
+                                        fill="grey")
 
     def create_buttons(self):
-        self.buttonframe = tkinter.Frame(self.root)
+        self.buttonframe = tkinter.Frame(self.root, bg="light blue")
         self.buttonframe.pack(side="left")
         self.terminalbutton = tkinter.Button(self.buttonframe,
                                              text="Send To Matrix",
@@ -71,64 +92,88 @@ class MatrixDrawer:
                                          bg="Yellow",
                                          command=self.fillall
                                          )
+        self.livebutton = tkinter.Button(self.buttonframe,
+                                         text="Status: Manual",
+                                         bg="Yellow",
+                                         command=self.togglelive
+                                         )
+        self.drawbutton = tkinter.Button(self.buttonframe,
+                                         text="Draw Mode",
+                                         bg="Yellow",
+                                         command=self.toggleerase
+                                         )
+        self.erasebutton = tkinter.Button(self.buttonframe,
+                                          text="Erase Mode",
+                                          bg="Yellow",
+                                          command=self.toggledraw
+                                          )
 
-        self.terminalbutton.grid(row=0, column=0)
-        self.clearbutton.grid(row=1, column=0)
-        self.fillbutton.grid(row=2, column=0)
+        self.terminalbutton.grid(row=0, column=0, columnspan=2)
+        self.clearbutton.grid(row=1, column=0, columnspan=2)
+        self.fillbutton.grid(row=2, column=0, columnspan=2)
+        self.livebutton.grid(row=3, column=0, columnspan=2)
+        self.drawbutton.grid(row=4, column=0)
+        self.erasebutton.grid(row=4, column=1)
+
+    def toggledraw(self):
+        self.drawmode = True
+        # self.drawbutton.configure(relief=)
+
+    def toggleerase(self):
+        self.drawmode = False
+
+    def togglelive(self):
+        if self.live:   # we were already live, going manual now
+            self.livebutton.configure(text="Status: Manual")
+            self.live = False
+        else:           # we were manual, now going live
+            self.livebutton.configure(text="Status: Live  ")
+            self.live = True
+            self.live_update()
+
+    def live_update(self):
+        if self.live:
+            self.screen.refresh()
+            self.root.after(150, self.live_update)
 
     def clearall(self):
         """
-        Clears all squares, resetting them back to grey
+        Clears all pixels, resetting them back to grey
         """
         for i in range(self.x * self.y):
             self.canvas.itemconfig(i+1, fill="grey")
 
+        self.image.blank()
+
     def fillall(self):
         """
-        Fills all squares, setting them to red
+        Fills all pixels, setting them to red
         """
         for i in range(self.x * self.y):
             self.canvas.itemconfig(i+1, fill="red")
 
-    def mouseinteract1(self, event):
-        """
-        For Left-click
-        Write/Erase
-        """
+        self.image.fill()
+
+    def mouse_interact_left(self, event):
         if event.widget.winfo_id() == self.canvas.winfo_id():
             x = self.canvas.canvasx(event.x)
             y = self.canvas.canvasy(event.y)
 
-            square = self.canvas.find_closest(x, y)
+            pixel = self.canvas.find_closest(x, y)
 
-            if self.canvas.itemcget(square, "fill") == "grey":
-                self.canvas.itemconfig(square, fill="red")
-            else:
-                self.canvas.itemconfig(square, fill="grey")
+            self.canvas.itemconfig(pixel, fill="red")
+            self.drawer.dot((pixel[0]-1) % self.x,
+                            (pixel[0] - 1) // self.x)
 
-    def mouseinteract2(self, event):
-        """
-        For Left-Drag
-        Write
-        """
+    def mouse_interact_right(self, event):
         if event.widget.winfo_id() == self.canvas.winfo_id():
             x = self.canvas.canvasx(event.x)
             y = self.canvas.canvasy(event.y)
 
-            square = self.canvas.find_closest(x, y)
-            self.canvas.itemconfig(square, fill="red")
-
-    def mouseinteract3(self, event):
-        """
-        For Right-click / Right-Drag
-        Erase
-        """
-        if event.widget.winfo_id() == self.canvas.winfo_id():
-            x = self.canvas.canvasx(event.x)
-            y = self.canvas.canvasy(event.y)
-
-            square = self.canvas.find_closest(x, y)
-            self.canvas.itemconfig(square, fill="grey")
+            pixel = self.canvas.find_closest(x, y)
+            self.canvas.itemconfig(pixel, fill="grey")
+            self.drawer.erase((pixel[0]-1) % self.x,
+                              (pixel[0] - 1) // self.x)
 
     def update_pixmap(self):
         for i in range(self.x * self.y):
@@ -139,5 +184,10 @@ class MatrixDrawer:
 
         self.screen.refresh()
 
+
 a = MatrixDrawer()
+b = Updater(a)
+thread1 = threading.Thread(target=b.toggle_livestream)
+thread1.start()
 a.root.mainloop()
+b.livestream = False

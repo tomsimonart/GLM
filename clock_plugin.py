@@ -4,6 +4,7 @@ from libs.screen import Screen
 from libs.text import Text
 from libs.image import Image
 from libs.drawer import Drawer
+from libs.rainbow import color, msg
 from datetime import datetime
 from os import system
 from time import sleep
@@ -13,7 +14,7 @@ class ClockPlugin:
     def __init__(self):
         self.author = 'Infected'
         self.name = 'Clock Plugin'
-        self.version = 'V2.0'
+        self.version = 'V3.23-4.2-DOS.26__release'
         self.time = datetime.now()
         self.timer = Text()
         self.canvas = Image(64, 16)
@@ -22,17 +23,20 @@ class ClockPlugin:
         self.invert = Image(64, 16)
         self.invert.fill()
 
-        self.screen = Screen(matrix=False, show=True, fps=15)
+        self.screen = Screen(matrix=True, show=False, fps=15)
         self.screen.add(self.time_frame, refresh=True)
         self.screen.add(self.timer, refresh=True, x=3, y=3)
         self.screen.add(self.canvas, refresh=False)
-        # self.screen.add(self.invert, mode='invert', refresh=False)
+        self.screen.add(self.invert, mode='invert', refresh=False)
 
         self.gen_canvas()
 
     def get_info(self):
         """Get the current state and information of the plugin"""
-        print(self.name, self.author, self.version, sep='\n')
+        print(color(self.name, "red"),
+              color(self.author, "green"),
+              color(self.version, "magenta"),
+              sep='\n')
 
     def gen_canvas(self):
         self.canvas_draw.line(0, 0, 63, 0)

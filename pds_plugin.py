@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 
-from libs.streamtools import Stream
 from libs.image import Image
+from libs.screen import Screen
 from random import randint
 from time import sleep
 from os import system
+
 
 class Mouche:
     def __init__(self, min_x=0, min_y=0, max_x=64, max_y=16):
@@ -17,7 +18,7 @@ class Mouche:
         self.trail_x = self.x
         self.trail_y = self.y
         self.previous = 1
-        self.invert = {0:2,1:3,2:0,3:1}
+        self.invert = {0: 2, 1: 3, 2: 0, 3: 1}
 
     def casse_toi(self):
         self.trail_x = self.x
@@ -35,22 +36,27 @@ class Mouche:
             self.dec_y()
         self.previous = direction
 
-
     def add_x(self):
         self.x = self.x + 1 if self.x + 1 < self.max_x else self.x
+
     def add_y(self):
         self.y = self.y + 1 if self.y + 1 < self.max_y else self.y
+
     def dec_x(self):
         self.x = self.x - 1 if self.x - 1 >= self.min_x else self.x
+
     def dec_y(self):
         self.y = self.y - 1 if self.y - 1 >= self.min_y else self.y
 
     def get_x(self):
         return self.x
+
     def get_y(self):
         return self.y
+
     def get_trail_x(self):
         return self.trail_x
+
     def get_trail_y(self):
         return self.trail_y
 
@@ -62,9 +68,11 @@ class PdsPlugin:
         self.name = 'PDS Plugin'
         self.version = '0.1a'
 
-        self.image = Image()
-        self.monitor = Stream(matrix=self.matrix)
-        self.delay = float(delay)
+        self.image = Image(64, 16)
+        self.screen = Screen(matrix=matrix, show=True, fps=int(delay))
+        self.screen.add(self.image, mode="invert")
+        # self.monitor = Stream(matrix=self.matrix)
+        # self.delay = float(delay)
 
     def get_info(self):
         """Get the current state and information of the plugin"""
@@ -76,18 +84,15 @@ class PdsPlugin:
     def get_image(self):
         return self.image
 
-    def set_pixmap(self, image):
-        self.image.set_pixmap(image)
+    def set_pixmap(self, pixmap):
+        self.image.set_pixmap(pixmap)
 
     def get_pixmap(self):
         return self.image.get_pixmap()
 
     def stream(self):
-        self.monitor.set_data_from_matrix(self.get_pixmap())
-        #system('clear')
-        #print(self.monitor)
-        if self.matrix:
-            self.monitor.send_to_serial()
+
+        self.screen.refresh()
 
     def blank(self):
         self.image.blank()
@@ -133,9 +138,6 @@ if __name__ == '__main__':
     while True:
         try:
             plugin.stream()
-            plugin.blank()
-            sleep(plugin.get_delay())
-
             new_pixmap = plugin.get_pixmap()
             for mouche in mouches:
                 new_pixmap[mouche.get_y()][mouche.get_x()] = 1
