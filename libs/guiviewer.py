@@ -14,7 +14,9 @@ class GuiViewer:
 
         self.create_window()
         self.create_canvas()
-        self.update_pixmap()
+
+        self.update_pixmap()    #Most important function
+
         self.root.mainloop()
 
     def create_window(self):
@@ -39,6 +41,10 @@ class GuiViewer:
                                         fill="grey")
 
     def update_pixmap(self):
+        """
+        Runs after every turn of the mainloop updating the matrix.
+        Kind of infinite until end of life of the tkinter gui.
+        """
         for i in range(len(self.image.pixmap)):
             for j in range(len(self.image.pixmap[i])):
                 if self.image.pixmap[i][j] == 1:

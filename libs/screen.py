@@ -46,7 +46,7 @@ class Screen:
         self.show = show
         self.childs = []
 
-        self.show_gui()
+        self.show_gui()         #   ON BY DEFAULT. TO BE CHANGED AT A LATER DATE
 
     def add(self, element, x=0, y=0, refresh=True, mode="fill", name="Child"):
         """
@@ -117,5 +117,10 @@ class Screen:
         return string
 
     def show_gui(self):
+        """
+        Instantiates the tkinter gui and gets it running. The gui is updated
+        from within itself by a function that is run at the end of each
+        turn of the tkinter mainloop.
+        """
         thread1 = threading.Thread(target=lambda: GuiViewer(self.image))
         thread1.start()
