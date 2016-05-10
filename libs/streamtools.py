@@ -13,7 +13,7 @@ class Stream:
     def __init__(self, matrix=True, tty="/dev/ttyACM0"):
         self.matrix = matrix
         self.byte = bytes(1)
-        self.lenght = 1024
+        self.length = 1024
         # Empty initial data
         self.data = ''.join(['0' for i in range(1024)])
         self.tty = tty
@@ -44,7 +44,7 @@ class Stream:
 
     def __bytes__(self):
         byte_list = [
-            int(self.data[i:i+8], 2)for i in range(0, self.lenght-1, 8)]
+            int(self.data[i:i+8], 2)for i in range(0, self.length-1, 8)]
         return bytes(byte_list)
 
     def set_data(self, data):
@@ -81,13 +81,13 @@ class Stream:
     def send_to_serial(self):
         if not self.matrix:
             return 0
-        for i in range(0, self.lenght-1, 8):
+        for i in range(0, self.length-1, 8):
             try:
                 self.arduino.write(
                     int(self.data[i:i+8], 2).to_bytes(1, 'little'))
                 self.bytes_written += 1
             except KeyboardInterrupt:
-                for j in range(i, self.lenght-1, 8):
+                for j in range(i, self.length-1, 8):
                     self.arduino.write(int(0).to_bytes(1, 'little'))
                     sleep(0.001)
                 sleep(0.02)

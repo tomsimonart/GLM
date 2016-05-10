@@ -31,14 +31,15 @@ class Screen:
             height=MAT_HEIGHT,
             matrix=True,
             show=False,
-            fps=0):
+            fps=0,
+            tty='/dev/ttyACM0'):
 
         if fps > 0:
             self.fps = 1 / fps
         else:
             self.fps = 0
         self.image = Image(width=width, height=height)
-        self.streamer = Stream(matrix=matrix)
+        self.streamer = Stream(matrix=matrix, tty=tty)
         self.show = show
         self.childs = []
 
