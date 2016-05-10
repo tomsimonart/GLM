@@ -57,6 +57,8 @@ class Screen:
         """
         if str(type(element)) == "<class 'libs.slide.Slide'>":
             self.childs.append((element.view, x, y, refresh, mode, name))
+        elif str(type(element)) == "<class 'libs.text.Text'>":
+            self.childs.append((element, x, y, refresh, mode, name))
         elif str(type(element)) == "<class 'libs.image.Image'>":
             self.childs.append((element, x, y, refresh, mode, name))
         else:
