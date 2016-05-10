@@ -43,7 +43,7 @@ class Screen:
         self.show = show
         self.childs = []
 
-    def add(self, image, x=0, y=0, refresh=True, mode="fill", name="Child"):
+    def add(self, element, x=0, y=0, refresh=True, mode="fill", name="Child"):
         """
         Add a new Image to the childs.
 
@@ -55,7 +55,12 @@ class Screen:
         mode -- paste mode [Image.paste()] (default "fill")
         name -- name (default "Child")
         """
-        self.childs.append((image, x, y, refresh, mode, name))
+        if str(type(element)) == "<class 'libs.slide.Slide'>":
+            self.childs.append((element.view, x, y, refresh, mode, name))
+        elif str(type(element)) == "<class 'libs.image.Image'>":
+            self.childs.append((element, x, y, refresh, mode, name))
+        else:
+            msg("not a valid element", 2, "Screen.add()", type(element))
 
     def remove(self, id_):
         """Delete a child by his id"""

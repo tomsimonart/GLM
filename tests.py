@@ -10,7 +10,7 @@ if __name__ == '__main__':
     scr = Screen(matrix=True, show=False, fps=60, tty='/dev/ttyACM0')
     aa = Text("the slide frame works!")
     slide = Slide(aa)
-    scr.add(slide.view)
+    scr.add(slide)
 
     while True:
         slide.refresh()
