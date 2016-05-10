@@ -1,6 +1,6 @@
 from libs.streamtools import Stream
 from libs.image import Image
-from libs.rainbow import color
+from libs.rainbow import color, msg
 from os import system
 from time import sleep
 from sys import argv
@@ -55,6 +55,14 @@ class Screen:
         name -- name (default "Child")
         """
         self.childs.append((image, x, y, refresh, mode, name))
+
+    def remove(self, id_):
+        """Delete a child by his id"""
+        if id_ <= len(self.childs) - 1:
+            msg(self.childs.pop(id_)[5], 0, "Removed")
+        else:
+            msg("no such child", 2, "Screen.remove()", len(self.childs), id_)
+
 
     def refresh(self):
         """

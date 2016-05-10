@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+from libs.rainbow import msg
+
+
 class Drawer:
     def __init__(self, image):
         self.image = image
@@ -8,13 +11,13 @@ class Drawer:
         if x < self.image.width and y < self.image.height:
             self.image.pixmap[y][x] = 1
         else:
-            print('dot: outside image', x, y)
+            msg("outside image", 1, "dot", x, y)
 
     def erase(self, x, y):
         if x < self.image.width and y < self.image.height:
             self.image.pixmap[y][x] = 0
         else:
-            print('erase: outside image', x, y)
+            msg("outside image", 1, "erase", x, y)
 
     def line(self, x1, y1, x2, y2):
         dx = x2 - x1

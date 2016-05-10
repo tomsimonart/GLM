@@ -79,11 +79,11 @@ class Text(Image):
         font -- font file to be used from FONT_DIR (default None)
         """
         self.spacing = spacing
-        self.text = text.strip('\n')
+        self.text = str(text).strip('\n')
         if self.text == '':
             self.text = ' '
 
-        if font is None:
+        elif font is None:
             font = Text.DEFAULT_FONT
 
         if not hasattr(self, 'font'):  # Load font once
