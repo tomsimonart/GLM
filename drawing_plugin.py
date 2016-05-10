@@ -17,20 +17,16 @@ from libs.screen import Screen
 class Updater():
     def __init__(self, interface):
         self.interface = interface
-        self.screen = Screen(matrix=True, show=False, fps=50)
+        self.screen = Screen(matrix=False, show=False, fps=50)
         self.screen.add(self.interface.image, refresh=False)
-        self.livestream = False
+        self.livestream = True
 
     def one_refresh(self):
         self.screen.refresh()
 
     def toggle_livestream(self):
-        if self.livestream is True:
-            self.livestream = False
-        else:
-            self.livestream = True
-            while self.livestream:
-                self.screen.refresh()
+        while self.livestream:
+            self.screen.refresh()
 
 
 class MatrixDrawer:

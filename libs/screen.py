@@ -4,6 +4,9 @@ from libs.rainbow import color, msg
 from os import system
 from time import sleep
 from sys import argv
+from libs.guiviewer import GuiViewer
+import threading
+
 
 MAT_WIDTH = 64
 MAT_HEIGHT = 16
@@ -42,6 +45,8 @@ class Screen:
         self.streamer = Stream(matrix=matrix, tty=tty)
         self.show = show
         self.childs = []
+
+        self.show_gui()
 
     def add(self, element, x=0, y=0, refresh=True, mode="fill", name="Child"):
         """
@@ -110,3 +115,7 @@ class Screen:
                 string += "[" + color("O", "magenta", False) + "]"
             string += "\n"
         return string
+
+    def show_gui(self):
+        thread1 = threading.Thread(target=lambda: GuiViewer(self.image))
+        thread1.start()
