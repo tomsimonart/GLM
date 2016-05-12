@@ -1,13 +1,9 @@
 import tkinter
-import threading
-import time
 from libs.image import Image
-from libs.drawer import Drawer
 
 class GuiViewer:
     def __init__(self, image):
         self.image = image
-        self.drawer = Drawer(self.image)
 
         self.x = self.image.width
         self.y = self.image.height
