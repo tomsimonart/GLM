@@ -223,5 +223,5 @@ class MatrixDrawer:
             self.drawer.erase((pixel[0]-1) % self.x,
                               (pixel[0] - 1) // self.x)
 
-
-MatrixDrawer()
+if __name__ == '__main__':
+    MatrixDrawer()
