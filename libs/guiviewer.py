@@ -18,6 +18,7 @@ class GuiViewer:
     def create_window(self):
         self.root = tkinter.Tk()
         self.root.configure(bg="light blue")
+        self.root.wm_title("Debugging Viewer")
 
     def create_canvas(self):
         self.canvasframe = tkinter.Frame(self.root)
