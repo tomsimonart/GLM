@@ -1,9 +1,12 @@
 from libs.streamtools import Stream
 from libs.image import Image
 from libs.rainbow import color, msg
+from libs.guiviewer import GuiViewer
 from os import system
 from time import sleep
 from sys import argv
+from threading import Thread
+
 
 MAT_WIDTH = 64
 MAT_HEIGHT = 16
@@ -31,6 +34,7 @@ class Screen:
             height=MAT_HEIGHT,
             matrix=True,
             show=False,
+            guishow=False,
             fps=0,
             tty='/dev/ttyACM0'):
 
@@ -42,6 +46,8 @@ class Screen:
         self.streamer = Stream(matrix=matrix, tty=tty)
         self.show = show
         self.childs = []
+        if guishow:
+            self.show_gui()
 
     def add(self, element, x=0, y=0, refresh=True, mode="fill", name="Child"):
         """
@@ -110,3 +116,13 @@ class Screen:
                 string += "[" + color("O", "magenta", False) + "]"
             string += "\n"
         return string
+
+    def show_gui(self):
+        """
+        Instantiates the tkinter gui and gets it running. The gui is updated
+        from within itself by a function that is run at the end of each
+        turn of the tkinter mainloop.
+        """
+        gui_thread = Thread(target=lambda: GuiViewer(self.image))
+        gui_thread.daemon = True
+        gui_thread.start()
