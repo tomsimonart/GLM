@@ -124,4 +124,5 @@ class Screen:
         turn of the tkinter mainloop.
         """
         gui_thread = Thread(target=lambda: GuiViewer(self.image))
+        gui_thread.daemon = True
         gui_thread.start()
