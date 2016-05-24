@@ -1,9 +1,12 @@
 from libs.streamtools import Stream
 from libs.image import Image
 from libs.rainbow import color, msg
+from libs.guiviewer import GuiViewer
 from os import system
 from time import sleep
 from sys import argv
+from threading import Thread
+
 
 MAT_WIDTH = 64
 MAT_HEIGHT = 16
@@ -31,18 +34,22 @@ class Screen:
             height=MAT_HEIGHT,
             matrix=True,
             show=False,
-            fps=0):
+            guishow=False,
+            fps=0,
+            tty='/dev/ttyACM0'):
 
         if fps > 0:
             self.fps = 1 / fps
         else:
             self.fps = 0
         self.image = Image(width=width, height=height)
-        self.streamer = Stream(matrix=matrix)
+        self.streamer = Stream(matrix=matrix, tty=tty)
         self.show = show
         self.childs = []
+        if guishow:
+            self.show_gui()
 
-    def add(self, image, x=0, y=0, refresh=True, mode="fill", name="Child"):
+    def add(self, element, x=0, y=0, refresh=True, mode="fill", name="Child"):
         """
         Add a new Image to the childs.
 
@@ -54,7 +61,14 @@ class Screen:
         mode -- paste mode [Image.paste()] (default "fill")
         name -- name (default "Child")
         """
-        self.childs.append((image, x, y, refresh, mode, name))
+        if str(type(element)) == "<class 'libs.slide.Slide'>":
+            self.childs.append((element.view, x, y, refresh, mode, name))
+        elif str(type(element)) == "<class 'libs.text.Text'>":
+            self.childs.append((element, x, y, refresh, mode, name))
+        elif str(type(element)) == "<class 'libs.image.Image'>":
+            self.childs.append((element, x, y, refresh, mode, name))
+        else:
+            msg("not a valid element", 2, "Screen.add()", type(element))
 
     def remove(self, id_):
         """Delete a child by his id"""
@@ -102,3 +116,13 @@ class Screen:
                 string += "[" + color("O", "magenta", False) + "]"
             string += "\n"
         return string
+
+    def show_gui(self):
+        """
+        Instantiates the tkinter gui and gets it running. The gui is updated
+        from within itself by a function that is run at the end of each
+        turn of the tkinter mainloop.
+        """
+        gui_thread = Thread(target=lambda: GuiViewer(self.image))
+        gui_thread.daemon = True
+        gui_thread.start()
