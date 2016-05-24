@@ -21,7 +21,7 @@ class Updater:
     """
     def __init__(self, interface):
         self.interface = interface
-        self.screen = Screen(matrix=False, show=True, fps=50)
+        self.screen = Screen(matrix=False, guishow=True, fps=50)
         self.screen.add(self.interface.image, refresh=False)
 
         self.live = False
@@ -45,6 +45,7 @@ class MatrixDrawer:
 
         self.live = False
         self.drawmode = True
+        self.updatethread = None
 
         self.create_window()
         self.create_canvas()
@@ -52,10 +53,9 @@ class MatrixDrawer:
         self.root.mainloop()    # Launch tkinter eventloop
         # This is run only after tkinter is closed and its event loop ends
         # Cleaning up any potential loose ends at close of program
-        self.updater.live = False
-        for thread in threading.enumerate():
-            if thread is not threading.current_thread():
-                thread.join()
+        if self.updatethread is not None:
+            self.updater.live = False
+            self.updatethread.join()
 
     def create_window(self):
         self.root = tkinter.Tk()
@@ -163,6 +163,7 @@ class MatrixDrawer:
             # Stop the infinite loop in the other thread and terminate it
             self.updater.live = False
             self.updatethread.join()
+            self.updatethread = None
 
         else:           # we were manual, now going live
             self.livebutton.configure(text="Status: Live")
