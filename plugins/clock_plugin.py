@@ -1,20 +1,19 @@
 #!/usr/bin/env python3
-
+from datetime import datetime
 from libs.screen import Screen
 from libs.text import Text
 from libs.image import Image
 from libs.drawer import Drawer
 from libs.rainbow import color, msg
-from datetime import datetime
 from os import system
 from time import sleep
 
 
 class ClockPlugin:
-    def __init__(self):
+    def __init__(self, matrix=False, show=False):
         self.author = 'Infected'
         self.name = 'Clock Plugin'
-        self.version = 'V3.23-4.2-DOS.26__release'
+        self.version = '0.0.1'
         self.time = datetime.now()
         self.timer = Text()
         self.canvas = Image(64, 16)
@@ -23,7 +22,7 @@ class ClockPlugin:
         self.invert = Image(64, 16)
         self.invert.fill()
 
-        self.screen = Screen(matrix=True, show=False, fps=15)
+        self.screen = Screen(matrix=matrix, show=show, fps=15)
         self.screen.add(self.time_frame, refresh=True)
         self.screen.add(self.timer, refresh=True, x=3, y=3)
         self.screen.add(self.canvas, refresh=False)
@@ -54,7 +53,7 @@ class ClockPlugin:
             str(self.time.second).zfill(2)),
             font='fontbignum')
 
-    def stream(self):
+    def start(self):
         self.refresh()
         self.print_time()
         self.screen.refresh()
