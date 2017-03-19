@@ -13,10 +13,33 @@ from libs.text import Text
 #       INSTRUCTIONS
 #       CLICKING 2 DOTS AND THEN A LINE BETWEEN THEM APPEARS
 #       CLICKING 2 DOTS AND A SQUARE BETWEEN THEM APPEARS
-#       WRITING TEXT
 #       SAVING / LOADING AN IMAGE
 #       UNDO/REDO
 #       PRESET ANIMATIONS
+
+
+
+class Plugin:
+    def __init__(self, matrix=True, show=False, guishow=False):
+        self.version = "0.0.2"
+        self.name = "Graphical Drawer"
+        self.screen = Screen(matrix=matrix, show=show, guishow=guishow)
+        self.guidrawer = MatrixDrawer(self.screen)
+
+    def start(self):
+        self.guidrawer.create_window()
+        self.guidrawer.create_canvas()
+        self.guidrawer.create_buttons()
+        self.guidrawer.create_mouse_binds()
+
+        self.guidrawer.center(self.guidrawer.root)
+
+        self.guidrawer.root.mainloop()    # Launch tkinter eventloop
+        # This is run only after tkinter is closed and its event loop ends
+        # Cleaning up any potential loose ends at close of program
+        if self.guidrawer.updatethread is not None:
+            self.guidrawer.updater.live = False
+            self.guidrawer.updatethread.join()
 
 
 class Updater:
@@ -24,11 +47,8 @@ class Updater:
     Class that simply serves to provide a live update to the matrix for the
     user drawing on the gui drawer
     """
-    def __init__(self, interface):
-        self.interface = interface
-        self.screen = Screen(matrix=False, guishow=False, fps=50)
-        self.screen.add(self.interface.image, refresh=False)
-
+    def __init__(self, screen):
+        self.screen = screen
         self.live = False
 
     def one_refresh(self):
@@ -41,10 +61,11 @@ class Updater:
 
 
 class MatrixDrawer:
-    def __init__(self, x=64, y=16):
+    def __init__(self,screen, x=64, y=16):
         self.image = Image(width=x, height=y)
         self.drawer = Drawer(self.image)
-        self.updater = Updater(self)
+        screen.add(self.image, refresh=False)
+        self.updater = Updater(screen)
 
         self.x = x
         self.y = y
@@ -57,19 +78,6 @@ class MatrixDrawer:
         # Variables used for entry of text.
         self.savedtextpixmap = []
         self.lastpixel = (1,)
-
-        self.create_window()
-        self.create_canvas()
-        self.create_buttons()
-        self.create_mouse_binds()
-
-        self.center(self.root)
-        self.root.mainloop()    # Launch tkinter eventloop
-        # This is run only after tkinter is closed and its event loop ends
-        # Cleaning up any potential loose ends at close of program
-        if self.updatethread is not None:
-            self.updater.live = False
-            self.updatethread.join()
 
     def center(self,window):
         """
@@ -299,7 +307,3 @@ class MatrixDrawer:
                     self.canvas.itemconfig(y*64+x+1, fill="red")
                 else:
                     self.canvas.itemconfig(y*64+x+1, fill="grey")
-
-
-if __name__ == '__main__':
-    MatrixDrawer()
