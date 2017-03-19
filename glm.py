@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
-from plugins.drawing_plugin import MatrixDrawer
+from plugins.load_plugin import LoadPlugin
 
-MatrixDrawer()
+plugin = LoadPlugin(True, False)
+plugin.start()

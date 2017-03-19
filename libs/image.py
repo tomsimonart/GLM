@@ -6,11 +6,11 @@ from libs.rainbow import msg
 
 class Image:
     """
-    An Image has a width a height and a boolean pixmap (matrix).
+    An Image has a width a height and a Boolean pixmap (matrix).
     All parameters are optional.
 
     You can specify the width and the height without pixmap.
-    If you give a pixmap only, the Image will be autosized even if the sizes
+    If you give a pixmap only, the Image will be auto-sized even if the sizes
     are not equal.
 
     Keyword arguments:
@@ -18,6 +18,7 @@ class Image:
     height -- Image height (default None)
     pixmap -- matrix of binary data (default None)
     """
+
     def __init__(self, width=None, height=None, pixmap=None):
         self.width = width
         self.height = height
@@ -85,7 +86,7 @@ class Image:
         """Fills the remaining width of the pixmap with 0"""
         self.pixmap = [
             i[:self.width] + [0] * (self.width - len(i)) for i in self.pixmap
-            ]
+        ]
 
     def check_height(self, pixmap):
         """
@@ -152,13 +153,13 @@ class Image:
         """Clear the Image"""
         self.pixmap = [
             [0 for j in range(self.width)] for i in range(self.height)
-            ]
+        ]
 
     def fill(self):
         """Fill the Image"""
         self.pixmap = [
             [1 for j in range(self.width)] for i in range(self.height)
-            ]
+        ]
 
     def paste(self, image, x=0, y=0, mode='fill'):
         """

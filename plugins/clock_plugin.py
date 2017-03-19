@@ -11,9 +11,10 @@ from time import sleep
 
 class ClockPlugin:
     def __init__(self, matrix=False, show=False):
+        super(Plugin, self).__init__()
+        self.version = '0.0.1'
         self.author = 'Infected'
         self.name = 'Clock Plugin'
-        self.version = '0.0.1'
         self.time = datetime.now()
         self.timer = Text()
         self.canvas = Image(64, 16)
@@ -64,4 +65,4 @@ if __name__ == '__main__':
     plugin.get_info()
     input()
     while True:
-        plugin.stream()
+        plugin.start()
