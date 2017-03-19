@@ -11,7 +11,7 @@ from time import sleep
 
 class ClockPlugin:
     def __init__(self, matrix=False, show=False):
-        super(Plugin, self).__init__()
+        super(ClockPlugin, self).__init__()
         self.version = '0.0.1'
         self.author = 'Infected'
         self.name = 'Clock Plugin'
