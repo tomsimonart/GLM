@@ -22,6 +22,7 @@ from libs.text import Text
 class Plugin:
     def __init__(self, matrix=True, show=False, guishow=False):
         self.version = "0.0.2"
+        self.name = "Graphical Drawer"
         self.screen = Screen(matrix=matrix, show=show, guishow=guishow)
         self.guidrawer = MatrixDrawer(self.screen)
 
