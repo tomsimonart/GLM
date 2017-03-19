@@ -7,9 +7,6 @@ VERSION = "0.0.2"
 PLUGIN_PREFIX = "plugins"
 PLUGIN_DIRECTORY = "./" + PLUGIN_PREFIX + "/"
 
-# Add plugin loader
-# Add version checker
-
 
 def plugin_scan(_dir=PLUGIN_DIRECTORY):
     """Scans the plugin directory"""
@@ -30,20 +27,33 @@ def import_plugin(plugin):
         msg("Import error", 2, "import_plugin", ie)
 
 
-def plugin_checker(main_plugin) -> bool:
-    return True
+def plugin_checker(main_plugin, matrix=True, show=False) -> bool:
+    if not hasattr(main_plugin, "Plugin"):
+        msg("Plugin outdated", 2, "plugin_checker")
+        return False
+    else:
+        loaded_plugin = main_plugin.Plugin(matrix=matrix, show=show)
+    if not hasattr(loaded_plugin, "start"):
+        msg("Plugin outdated", 2, "plugin_checker")
+        return False
+    if not hasattr(loaded_plugin, "version"):
+        msg("Plugin outdated", 2, "plugin_checker")
+        return False
+    else:
+        if loaded_plugin.version != VERSION:
+            msg("Plugin outdated", 2, "plugin_checker", loaded_plugin.version)
+            return False
+        else:
+            msg("Plugin version ok", 0, "plugin_checker", loaded_plugin.version)
+    return loaded_plugin
 
 
 def plugin_loader(plugin) -> bool:
     main_plugin = import_plugin(PLUGIN_PREFIX + "." + plugin.replace(".py", ''))
-    # try:
-    if plugin_checker(main_plugin):
-        loaded_plugin = main_plugin.Plugin(True, True)
+    loaded_plugin = plugin_checker(main_plugin, matrix=True, show=False)
+    if loaded_plugin is not False:
         print_plugin_info(loaded_plugin)
         loaded_plugin.start()
-    else:
-        msg("nope", 2)
-
 
 def print_plugin_info(plugin):
     if hasattr(plugin, "name"):
