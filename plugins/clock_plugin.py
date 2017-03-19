@@ -9,10 +9,10 @@ from os import system
 from time import sleep
 
 
-class ClockPlugin:
-    def __init__(self, matrix=False, show=False):
-        super(ClockPlugin, self).__init__()
-        self.version = '0.0.1'
+class Plugin:
+    def __init__(self, matrix=True, show=False):
+        super(Plugin, self).__init__()
+        self.version = '0.0.2'
         self.author = 'Infected'
         self.name = 'Clock Plugin'
         self.time = datetime.now()
@@ -55,14 +55,12 @@ class ClockPlugin:
             font='fontbignum')
 
     def start(self):
-        self.refresh()
-        self.print_time()
-        self.screen.refresh()
-
-
-if __name__ == '__main__':
-    plugin = ClockPlugin()
-    plugin.get_info()
-    input()
-    while True:
-        plugin.start()
+        # self.get_info()
+        # input()
+        while True:
+            self.refresh()
+            self.print_time()
+            self.screen.refresh()
+        # except KeyboardInterrupt:
+        #     msg("Clock stopped")
+        #     exit(0)

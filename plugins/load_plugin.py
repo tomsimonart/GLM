@@ -7,10 +7,11 @@ from libs.rainbow import msg
 from time import sleep
 
 
-class LoadPlugin:
+class Plugin:
     def __init__(self, matrix=True, show=False, fps=35):
         super(LoadPlugin, self).__init__()
-        self.version = "0.0.1"
+        self.version = "0.0.2"
+        self.name = "Load Plugin"
         self.screen = Screen(matrix=matrix, show=show, fps=fps)
 
         self.label = Text("download")
