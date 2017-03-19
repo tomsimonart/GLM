@@ -2,16 +2,44 @@
 
 import tkinter
 import threading
+from tkinter import simpledialog
+from copy import deepcopy
 from libs.image import Image
 from libs.drawer import Drawer
 from libs.screen import Screen
+from libs.text import Text
 
 # TO DO LIST:
 #       INSTRUCTIONS
 #       CLICKING 2 DOTS AND THEN A LINE BETWEEN THEM APPEARS
 #       CLICKING 2 DOTS AND A SQUARE BETWEEN THEM APPEARS
-#       WRITING TEXT
 #       SAVING / LOADING AN IMAGE
+#       UNDO/REDO
+#       PRESET ANIMATIONS
+
+
+
+class Plugin:
+    def __init__(self, matrix=True, show=False, guishow=False):
+        self.version = "0.0.2"
+        self.name = "Graphical Drawer"
+        self.screen = Screen(matrix=matrix, show=show, guishow=guishow)
+        self.guidrawer = MatrixDrawer(self.screen)
+
+    def start(self):
+        self.guidrawer.create_window()
+        self.guidrawer.create_canvas()
+        self.guidrawer.create_buttons()
+        self.guidrawer.create_mouse_binds()
+
+        self.guidrawer.center(self.guidrawer.root)
+
+        self.guidrawer.root.mainloop()    # Launch tkinter eventloop
+        # This is run only after tkinter is closed and its event loop ends
+        # Cleaning up any potential loose ends at close of program
+        if self.guidrawer.updatethread is not None:
+            self.guidrawer.updater.live = False
+            self.guidrawer.updatethread.join()
 
 
 class Updater:
@@ -19,11 +47,8 @@ class Updater:
     Class that simply serves to provide a live update to the matrix for the
     user drawing on the gui drawer
     """
-    def __init__(self, interface):
-        self.interface = interface
-        self.screen = Screen(matrix=False, guishow=True, fps=50)
-        self.screen.add(self.interface.image, refresh=False)
-
+    def __init__(self, screen):
+        self.screen = screen
         self.live = False
 
     def one_refresh(self):
@@ -34,11 +59,13 @@ class Updater:
             self.screen.refresh()
 
 
+
 class MatrixDrawer:
-    def __init__(self, x=64, y=16):
+    def __init__(self,screen, x=64, y=16):
         self.image = Image(width=x, height=y)
         self.drawer = Drawer(self.image)
-        self.updater = Updater(self)
+        screen.add(self.image, refresh=False)
+        self.updater = Updater(screen)
 
         self.x = x
         self.y = y
@@ -46,26 +73,39 @@ class MatrixDrawer:
         self.live = False
         self.drawmode = True
         self.updatethread = None
+        self.textmode = False
 
-        self.create_window()
-        self.create_canvas()
-        self.create_buttons()
-        self.root.mainloop()    # Launch tkinter eventloop
-        # This is run only after tkinter is closed and its event loop ends
-        # Cleaning up any potential loose ends at close of program
-        if self.updatethread is not None:
-            self.updater.live = False
-            self.updatethread.join()
+        # Variables used for entry of text.
+        self.savedtextpixmap = []
+        self.lastpixel = (1,)
+
+    def center(self,window):
+        """
+        A magical function that centers the window in the middle of the screen
+        """
+        window.update_idletasks()
+        width = window.winfo_width()
+        frm_width = window.winfo_rootx() - window.winfo_x()
+        win_width = width + 2 * frm_width
+        height = window.winfo_height()
+        titlebar_height = window.winfo_rooty() - window.winfo_y()
+        win_height = height + titlebar_height + frm_width
+        x = window.winfo_screenwidth() // 2 - win_width // 2
+        y = window.winfo_screenheight() // 2 - win_height // 2
+        window.geometry('{}x{}+{}+{}'.format(width, height, x, y))
+        window.deiconify()
+
+
+    def create_mouse_binds(self):
+        self.canvas.bind("<Button-1>", self.mouse_interact_left)
+        self.canvas.bind("<B1-Motion>", self.mouse_interact_left)
+        self.canvas.bind("<Button-3>", self.mouse_interact_right)
+        self.canvas.bind("<B3-Motion>", self.mouse_interact_right)
 
     def create_window(self):
         self.root = tkinter.Tk()
         self.root.configure(bg="light blue")
         self.root.title("Matrix Drawer")
-
-        self.root.bind("<Button-1>", self.mouse_interact_left)
-        self.root.bind("<B1-Motion>", self.mouse_interact_left)
-        self.root.bind("<Button-3>", self.mouse_interact_right)
-        self.root.bind("<B3-Motion>", self.mouse_interact_right)
 
     def create_canvas(self):
         self.canvasframe = tkinter.Frame(self.root)
@@ -121,13 +161,19 @@ class MatrixDrawer:
                                           bg="Grey",
                                           activebackground="Grey"
                                           )
-
+        self.textbutton = tkinter.Button(self.buttonframe,
+                                          command=self.toggletext,
+                                          text="Enter Text",
+                                          bg="Yellow",
+                                          activebackground="Yellow"
+                                          )
         self.updatebutton.grid(row=0, column=0, columnspan=2)
         self.clearbutton.grid(row=1, column=0, columnspan=2)
         self.fillbutton.grid(row=2, column=0, columnspan=2)
         self.livebutton.grid(row=3, column=0, columnspan=2)
         self.drawbutton.grid(row=4, column=0)
         self.erasebutton.grid(row=4, column=1)
+        self.textbutton.grid(row=5, column=0, columnspan=2)
 
     def toggledraw(self):
         """
@@ -172,6 +218,27 @@ class MatrixDrawer:
             self.updatethread = threading.Thread(target=self.updater.toggle_live)
             self.updatethread.start()
 
+    def confirmtext(self, event):
+        self.create_mouse_binds()
+        self.canvas.unbind("<Motion>")
+        for button in self.buttonframe.children.values():
+            button.configure(state="normal")
+
+    def toggletext(self):
+        text = simpledialog.askstring("ENTER THE TEXT", "PLEASE")
+        if text is not None:
+            self.textimage = Text(text=text)
+            self.canvas.bind("<Button-1>", self.confirmtext)
+            self.canvas.bind("<Motion>", self.mouse_interact_movement)
+
+            self.canvas.unbind("<B1-Motion>")
+            self.canvas.unbind("<Button-3>")
+            self.canvas.unbind("<B3-Motion>")
+            self.savedtextpixmap = deepcopy(self.image.pixmap)
+
+            for button in self.buttonframe.children.values():
+                button.configure(state="disabled")
+
     def clearall(self):
         """
         Clears all pixels, resetting them back to grey
@@ -195,34 +262,48 @@ class MatrixDrawer:
         Left mouse's function depends on the 2 draw/erase buttons available to
         the user
         """
-        if event.widget.winfo_id() == self.canvas.winfo_id():
-            x = self.canvas.canvasx(event.x)
-            y = self.canvas.canvasy(event.y)
+        x = event.x
+        y = event.y
 
-            pixel = self.canvas.find_closest(x, y)
+        pixel = self.canvas.find_closest(x, y)
+        if self.drawmode:
+            self.canvas.itemconfig(pixel, fill="red")
+            self.drawer.dot((pixel[0]-1) % self.x,
+                            (pixel[0] - 1) // self.x)
 
-            if self.drawmode:
-                self.canvas.itemconfig(pixel, fill="red")
-                self.drawer.dot((pixel[0]-1) % self.x,
-                                (pixel[0] - 1) // self.x)
-
-            else:
-                self.canvas.itemconfig(pixel, fill="grey")
-                self.drawer.erase((pixel[0]-1) % self.x,
-                                (pixel[0] - 1) // self.x)
+        else:
+            self.canvas.itemconfig(pixel, fill="grey")
+            self.drawer.erase((pixel[0]-1) % self.x,
+                            (pixel[0] - 1) // self.x)
 
     def mouse_interact_right(self, event):
         """
         Right mouse button always used for erasing
         """
-        if event.widget.winfo_id() == self.canvas.winfo_id():
-            x = self.canvas.canvasx(event.x)
-            y = self.canvas.canvasy(event.y)
+        x = event.x
+        y = event.y
 
+        pixel = self.canvas.find_closest(x, y)
+        self.canvas.itemconfig(pixel, fill="grey")
+        self.drawer.erase((pixel[0]-1) % self.x,
+                          (pixel[0] - 1) // self.x)
+
+    def mouse_interact_movement(self, event):
+        if not self.textmode:
+            x = event.x
+            y = event.y
             pixel = self.canvas.find_closest(x, y)
-            self.canvas.itemconfig(pixel, fill="grey")
-            self.drawer.erase((pixel[0]-1) % self.x,
-                              (pixel[0] - 1) // self.x)
 
-if __name__ == '__main__':
-    MatrixDrawer()
+            if pixel != self.lastpixel:
+                self.lastpixel = pixel
+                self.image.pixmap = deepcopy(self.savedtextpixmap)
+                self.image.paste(self.textimage, mode="fill", x=(pixel[0]-1) % self.x, y=(pixel[0]-1) // self.x)
+                self.update_gui_from_pixmap()
+
+    def update_gui_from_pixmap(self):
+        for y in range(self.y):
+            for x in range(self.x):
+                if self.image.get_pixmap()[y][x]:
+                    self.canvas.itemconfig(y*64+x+1, fill="red")
+                else:
+                    self.canvas.itemconfig(y*64+x+1, fill="grey")
