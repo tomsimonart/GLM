@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from libs.rainbow import msg
+from .rainbow import msg
 
 
 class Drawer:

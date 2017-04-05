@@ -1,5 +1,5 @@
 import tkinter
-from libs.image import Image
+from .image import Image
 
 class GuiViewer:
     def __init__(self, image):

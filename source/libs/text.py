@@ -5,7 +5,7 @@
 # This version is much more simpler as it only allows to add text
 # to an image
 
-from libs.image import Image
+from .image import Image
 
 FONT_DIR = "./fonts/"
 
