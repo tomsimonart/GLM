@@ -73,7 +73,6 @@ def print_plugin_info(plugin):
         print(color(plugin.version, "magenta"))
     else:
         msg("No version", 1, "print_plugin_info")
-    input()
 
 
 def plugin_selector(plugins) -> str:
