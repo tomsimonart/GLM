@@ -78,6 +78,13 @@ class Screen:
             msg("no such child", 2, "Screen.remove()", len(self.childs), id_)
 
 
+    def remove_all(self):
+        """Remove all childs"""
+        number_of_childs = len(self.childs)
+        self.childs = []
+        msg("Removed %i childs" % number_of_childs, 1)
+
+
     def refresh(self):
         """
         Flatten all childs into one Image and send it to the streamer
