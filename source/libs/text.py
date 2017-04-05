@@ -5,9 +5,10 @@
 # This version is much more simpler as it only allows to add text
 # to an image
 
-from libs.image import Image
+import os
+from .image import Image
 
-FONT_DIR = "./fonts/"
+FONT_DIR = os.path.join(os.path.dirname(__file__), '../../fonts/')
 
 
 class Font:

@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
 
 import glob
+import importlib
 if __name__ == "__main__" and __package__ == None:
-    from libs.rainbow import color, msg
+    from source.libs.rainbow import color, msg
 else:
-    from .libs.rainbow import color, msg
+    from .source.libs.rainbow import color, msg
 
 
-VERSION = "0.0.2"
+VERSION = "0.0.3"
 PLUGIN_PREFIX = "plugins"
-PLUGIN_DIRECTORY = "./" + PLUGIN_PREFIX + "/"
+PLUGIN_PACKAGE = "source.plugins"
+PLUGIN_DIRECTORY = "./source/" + PLUGIN_PREFIX + "/"
 
 
 def plugin_scan(_dir=PLUGIN_DIRECTORY):
@@ -21,10 +23,9 @@ def plugin_scan(_dir=PLUGIN_DIRECTORY):
 
 def import_plugin(plugin):
     try:
-        _temp = __import__(plugin)
-        main_plugin = getattr(_temp, plugin.replace(
-            PLUGIN_PREFIX + '.', ""))
+        main_plugin = importlib.import_module(plugin)
         msg("plugin imported", 0, "import_plugin", plugin)
+
         return main_plugin
 
     except ImportError as ie:
@@ -53,7 +54,7 @@ def plugin_checker(main_plugin, matrix=True, show=False) -> bool:
 
 
 def plugin_loader(plugin, matrix=False, show=True) -> bool:
-    main_plugin = import_plugin(PLUGIN_PREFIX + "." + plugin.replace(".py", ''))
+    main_plugin = import_plugin(PLUGIN_PACKAGE + "." + plugin.replace(".py", ''))
     loaded_plugin = plugin_checker(main_plugin, matrix=matrix, show=show)
     if loaded_plugin is not False:
         print_plugin_info(loaded_plugin)
@@ -72,7 +73,6 @@ def print_plugin_info(plugin):
         print(color(plugin.version, "magenta"))
     else:
         msg("No version", 1, "print_plugin_info")
-    input()
 
 
 def plugin_selector(plugins) -> str:

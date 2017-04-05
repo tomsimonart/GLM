@@ -4,10 +4,10 @@ import tkinter
 import threading
 from tkinter import simpledialog
 from copy import deepcopy
-from libs.image import Image
-from libs.drawer import Drawer
-from libs.screen import Screen
-from libs.text import Text
+from ..libs.image import Image
+from ..libs.drawer import Drawer
+from ..libs.screen import Screen
+from ..libs.text import Text
 
 # TO DO LIST:
 #       INSTRUCTIONS
@@ -21,7 +21,7 @@ from libs.text import Text
 
 class Plugin:
     def __init__(self, matrix=True, show=False, guishow=False):
-        self.version = "0.0.2"
+        self.version = "0.0.3"
         self.author = "Minorias"
 
         self.name = "Graphical Drawer"

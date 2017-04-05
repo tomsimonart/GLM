@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from libs.streamtools import Stream
-from libs.rainbow import msg
+from .streamtools import Stream
+from .rainbow import msg
 
 
 class Image:

@@ -1,7 +1,7 @@
-from libs.streamtools import Stream
-from libs.image import Image
-from libs.rainbow import color, msg
-from libs.guiviewer import GuiViewer
+from .streamtools import Stream
+from .image import Image
+from .rainbow import color, msg
+from .guiviewer import GuiViewer
 from os import system
 from time import sleep
 from sys import argv
@@ -61,11 +61,11 @@ class Screen:
         mode -- paste mode [Image.paste()] (default "fill")
         name -- name (default "Child")
         """
-        if str(type(element)) == "<class 'libs.slide.Slide'>":
+        if str(type(element)) == "<class '" + __package__ + ".slide.Slide'>":
             self.childs.append((element.view, x, y, refresh, mode, name))
-        elif str(type(element)) == "<class 'libs.text.Text'>":
+        elif str(type(element)) == "<class '" + __package__ + ".text.Text'>":
             self.childs.append((element, x, y, refresh, mode, name))
-        elif str(type(element)) == "<class 'libs.image.Image'>":
+        elif str(type(element)) == "<class '" + __package__ + ".image.Image'>":
             self.childs.append((element, x, y, refresh, mode, name))
         else:
             msg("not a valid element", 2, "Screen.add()", type(element))
