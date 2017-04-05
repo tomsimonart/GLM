@@ -61,11 +61,11 @@ class Screen:
         mode -- paste mode [Image.paste()] (default "fill")
         name -- name (default "Child")
         """
-        if str(type(element)) == "<class 'source.libs.slide.Slide'>":
+        if str(type(element)) == "<class '" + __package__ + ".slide.Slide'>":
             self.childs.append((element.view, x, y, refresh, mode, name))
-        elif str(type(element)) == "<class 'source.libs.text.Text'>":
+        elif str(type(element)) == "<class '" + __package__ + ".text.Text'>":
             self.childs.append((element, x, y, refresh, mode, name))
-        elif str(type(element)) == "<class 'source.libs.image.Image'>":
+        elif str(type(element)) == "<class '" + __package__ + ".image.Image'>":
             self.childs.append((element, x, y, refresh, mode, name))
         else:
             msg("not a valid element", 2, "Screen.add()", type(element))
