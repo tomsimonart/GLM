@@ -1,6 +1,6 @@
 from ..libs.screen import Screen
 from ..libs.text import Text
-from ..libs.webframe import Webframe
+from ..libs.webclient import WebClient
 
 class Plugin():
     def __init__(self, matrix=True, show=False, guishow=False):
@@ -13,7 +13,11 @@ class Plugin():
         self.screen = Screen(matrix=matrix, show=show)
         self.screen.add(self.sample_text, refresh=False, x=9, y=4)
 
-        self.interface = Webframe()
+        self.interface = WebClient()
 
     def start(self):
+        self.interface.send_data()
         self.screen.refresh()
+
+    def get_interface(self):
+        return "<input></input><button>test</button>"
