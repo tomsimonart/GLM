@@ -13,11 +13,10 @@ class Plugin():
         self.screen = Screen(matrix=matrix, show=show)
         self.screen.add(self.sample_text, refresh=False, x=9, y=4)
 
-        self.interface = WebClient()
+        self.data = ["<a href='google.com'>google</a>","<button>ok</button>"]
+        self.client = WebClient(data=self.data)
 
     def start(self):
-        self.interface.handle_data()
+        if not self.client.is_connected():
+            self.client.handle_data()
         self.screen.refresh()
-
-    def get_interface(self):
-        return "<input></input><button>test</button>"
