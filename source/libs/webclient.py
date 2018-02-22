@@ -20,6 +20,8 @@ class WebClient():
         signal.signal(signal.SIGTERM, self.close_connection)
         self.kill = False
 
+        self.connected = False
+
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client.connect((self.server_ip, server_port))
 
@@ -38,26 +40,37 @@ class WebClient():
         """
         pass
 
-    def handle_data(self, user="plugin", data=" "):
-        """ Change handle_data name
+    def _get_event_loop(self, user):
+        """ Threaded event receive
         """
         self.client.send(user.encode()) # Send user name
         response = self.client.recv(BUFFSIZE).decode()
         msg(response, 0, "plugin_handler")
-
         if response == "a:client_connected":
             while not self.kill:
                 if self.kill:
-                    msg("killed", 3, "Process")
-                    self.client.send(b"EOT") # Sending end signal
+                    self.client.send(b"EOT") # Sending end signal to server
                     self.client.close()
-                else:
-                    # Get event
-                    event = json.loads(self.client.recv(BUFFSIZE).decode())
-                    msg("event", 0, "plugin_handler", event)
-                    # Send data back
-                    self.client.send(json.dumps(self.data).encode())
-                    msg("data", 0, "plugin_handler", self.data)
-
+                    self.connected = False
+                    msg("killed", 3, "Process")
+                # Get event
+                event = json.loads(self.client.recv(BUFFSIZE).decode())
+                msg("receive", 0, "plugin_handler", event)
+                # Send data back
+                self.client.send(json.dumps(self.data).encode())
+                msg("send", 0, "plugin_handler", self.data)
         else:
             msg("Connection refused", 3)
+
+    def handle_data(self, user="plugin"):
+        """ Change handle_data name
+        """
+        if not self.connected:
+            get_event = threading.Thread(
+                target=self._get_event_loop,
+                args=(user,),
+                daemon=True
+                )
+            get_event.start()
+            self.connected = True
+            msg("starting", 2, "Thread")
