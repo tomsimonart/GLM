@@ -16,7 +16,7 @@ class Plugin():
         self.interface = WebClient()
 
     def start(self):
-        self.interface.send_data()
+        self.interface.handle_data()
         self.screen.refresh()
 
     def get_interface(self):
