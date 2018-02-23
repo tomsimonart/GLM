@@ -38,6 +38,7 @@ class WebClient():
     def _get_data(self):
         """ Get web data from plugin in encoded json format
         """
+        print(self.data)
         return json.dumps(self.data).encode()
 
     def get_event(self):
@@ -62,15 +63,19 @@ class WebClient():
                 # Check if plugin has been killed
                 if self.kill:
                     # Sending end signal to server
+                    self.client.settimeout(3)
                     trash = self.client.recv(BUFFSIZE) # get trash data
+                    self.client.settimeout(None)
                     self.client.send(json.dumps("EOT").encode())
-                    self.client.close()
-                    self.connected = False
                     msg("stopping", 2, "Thread")
                     msg("killed", 3, "Process")
+                    self.client.close()
+                    self.connected = False
                     break
 
                 else:
+                    # Still connected header
+                    self.client.send(json.dumps("READY").encode())
                     # Get event
                     r = self.client.recv(BUFFSIZE).decode()
                     event = json.loads(r)
@@ -80,7 +85,7 @@ class WebClient():
                     # Send data back
                     if event["method"] == "GET":
                         if event["data"] == "refresh":
-                            msg(_get_data().decode(), 3)
+                            msg("sent " + self._get_data().decode())
                             self.client.send(self._get_data())
                             # msg("send", 0, "plugin_handler", self._get_data())
 
