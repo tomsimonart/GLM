@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import json
+import queue
 import socket
 import signal
 import threading
@@ -11,7 +12,7 @@ BUFFSIZE = 512
 
 
 class WebClient():
-    def __init__(self, server_ip="localhost", server_port=9999, data=[]):
+    def __init__(self, data, server_ip="localhost", server_port=9999):
         super(WebClient, self).__init__()
         self.server_port = server_port
         self.server_ip = server_ip
@@ -26,6 +27,7 @@ class WebClient():
         self.client.connect((self.server_ip, server_port))
 
         self.data = data
+        self.events = queue.Queue()
 
     def close_connection(self, signum, frame):
         self.kill = True
@@ -38,24 +40,30 @@ class WebClient():
         """
         return json.dumps(self.data).encode()
 
-    def _send_event(self):
-        """ Send event to plugin
+    def get_event(self):
+        """ Send event to plugin if there is one, otherwise None
         """
-        pass
+        try:
+            event = self.events.get(block=False)
+            return event
+        except queue.Empty:
+            return None
 
     def _get_event_loop(self, user):
         """ Threaded event receive
         """
         self.client.send(user.encode()) # Send user name
         response = self.client.recv(BUFFSIZE).decode()
-        msg(response, 0, "plugin_handler")
+        msg("Connected")
 
         if response == "a:client_connected":
             while not self.kill:
                 msg("Working", 3)
                 # Check if plugin has been killed
                 if self.kill:
-                    self.client.send(b"EOT") # Sending end signal to server
+                    # Sending end signal to server
+                    trash = self.client.recv(BUFFSIZE) # get trash data
+                    self.client.send(json.dumps("EOT").encode())
                     self.client.close()
                     self.connected = False
                     msg("stopping", 2, "Thread")
@@ -64,11 +72,17 @@ class WebClient():
 
                 else:
                     # Get event
-                    event = json.loads(self.client.recv(BUFFSIZE).decode())
+                    r = self.client.recv(BUFFSIZE).decode()
+                    event = json.loads(r)
+                    msg(event, 3)
+                    self.events.put(event) # Add the event in the event queue
                     msg("receive", 0, "plugin_handler", event)
                     # Send data back
-                    self.client.send(self._get_data())
-                    msg("send", 0, "plugin_handler", self.data)
+                    if event["method"] == "GET":
+                        if event["data"] == "refresh":
+                            msg(_get_data().decode(), 3)
+                            self.client.send(self._get_data())
+                            # msg("send", 0, "plugin_handler", self._get_data())
 
         else:
             msg("Connection refused", 3)

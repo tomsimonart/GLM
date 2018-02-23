@@ -1,3 +1,4 @@
+import queue
 from ..libs.screen import Screen
 from ..libs.text import Text
 from ..libs.webclient import WebClient
@@ -14,9 +15,14 @@ class Plugin():
         self.screen.add(self.sample_text, refresh=False, x=9, y=4)
 
         self.data = ["<a href='google.com'>google</a>","<button>ok</button>"]
-        self.client = WebClient(data=self.data)
+        self.client = WebClient(self.data)
+        self.events = self.client.get_event()
 
     def start(self):
+        event = self.client.get_event()
+        if event is not None:
+            # Execute event
+            pass
         if not self.client.is_connected():
             self.client.handle_data()
         self.screen.refresh()
