@@ -5,6 +5,7 @@ import queue
 import socket
 import signal
 import threading
+import traceback
 from time import sleep
 from ..libs.rainbow import msg
 
@@ -30,6 +31,8 @@ class WebClient():
         self.events = queue.Queue()
 
     def close_connection(self, signum, frame):
+        msg("killed", 3)
+        traceback.format_exc()
         self.kill = True
 
     def is_connected(self):
@@ -63,19 +66,18 @@ class WebClient():
                 # Check if plugin has been killed
                 if self.kill:
                     # Sending end signal to server
-                    self.client.settimeout(3)
+                    self.client.settimeout(1)
                     trash = self.client.recv(BUFFSIZE) # get trash data
                     self.client.settimeout(None)
-                    self.client.send(json.dumps("EOT").encode())
+                    self.client.send(b"EOT")
                     msg("stopping", 2, "Thread")
                     msg("killed", 3, "Process")
                     self.client.close()
                     self.connected = False
-                    break
 
                 else:
                     # Still connected header
-                    self.client.send(json.dumps("READY").encode())
+                    self.client.send("READY".encode())
                     # Get event
                     r = self.client.recv(BUFFSIZE).decode()
                     event = json.loads(r)
@@ -88,6 +90,7 @@ class WebClient():
                             msg("sent " + self._get_data().decode())
                             self.client.send(self._get_data())
                             # msg("send", 0, "plugin_handler", self._get_data())
+                    self.kill = True
 
         else:
             msg("Connection refused", 3)
