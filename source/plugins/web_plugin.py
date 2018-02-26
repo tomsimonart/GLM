@@ -2,10 +2,13 @@ import queue
 from ..libs.screen import Screen
 from ..libs.text import Text
 from ..libs.webclient import WebClient
+from ..libs.rainbow import msg
+import signal
 
 class Plugin():
     def __init__(self, matrix=True, show=False, guishow=False):
         super(Plugin, self).__init__()
+
         self.name = "Example Plugin"
         self.version = "0.0.3"
 
@@ -16,7 +19,6 @@ class Plugin():
 
         self.data = ["<a href='google.com'>google</a>","<button>ok</button>"]
         self.client = WebClient(self.data)
-        self.events = self.client.get_event()
 
     def start(self):
         event = self.client.get_event()

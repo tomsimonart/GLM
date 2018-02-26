@@ -29,7 +29,6 @@ class WebClient():
 
     def close_connection(self, signum, frame):
         msg("killed", 3)
-        traceback.format_exc()
         self.kill = True
 
     def is_connected(self):
@@ -61,20 +60,16 @@ class WebClient():
         msg("Connected")
 
         if status == "a:client_connected":
-            while not self.kill:
+            while True:
                 msg("Working", 3)
                 # Check if plugin has been killed
                 if self.kill:
-                    # Sending end signal to server
-                    # self.client.settimeout(1)
-                    # trash = self.client.recv(BUFFSIZE) # get trash data
-                    # print(trash)
-                    # self.client.settimeout(None)
                     self.client.send(b"EOT")
                     msg("stopping", 2, "Thread")
                     msg("killed", 3, "Process")
                     self.client.close()
                     self.connected = False
+                    exit()
 
                 else:
                     # Still connected header
@@ -91,7 +86,6 @@ class WebClient():
                             msg("sent " + self._get_data().decode())
                             self.client.send(self._get_data())
                             # msg("send", 0, "plugin_handler", self._get_data())
-                    self.kill = True
 
         else:
             msg("Connection refused", 3)

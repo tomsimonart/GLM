@@ -7,7 +7,6 @@ if __name__ == "__main__" and __package__ == None:
 else:
     from .source.libs.rainbow import color, msg
 
-
 VERSION = "0.0.3"
 PLUGIN_PREFIX = "plugins"
 PLUGIN_PACKAGE = "source.plugins"
@@ -53,7 +52,7 @@ def plugin_checker(main_plugin, matrix=True, show=False) -> bool:
     return loaded_plugin
 
 
-def plugin_loader(plugin, matrix=False, show=True) -> bool:
+def plugin_loader(plugin, matrix=False, show=True):
     main_plugin = import_plugin(PLUGIN_PACKAGE + "." + plugin.replace(".py", ''))
     loaded_plugin = plugin_checker(main_plugin, matrix=matrix, show=show)
     if loaded_plugin is not False:
