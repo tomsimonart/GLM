@@ -15,17 +15,14 @@ BUFFSIZE = 512
 class WebClient():
     def __init__(self, data, server_ip="localhost", server_port=9999):
         super(WebClient, self).__init__()
-        self.server_port = server_port
         self.server_ip = server_ip
+        self.server_port = server_port
 
         # Catch process closing
         signal.signal(signal.SIGTERM, self.close_connection)
         self.kill = False
 
         self.connected = False
-
-        self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.client.connect((self.server_ip, server_port))
 
         self.data = data
         self.events = queue.Queue()
@@ -56,19 +53,23 @@ class WebClient():
     def _get_event_loop(self, user):
         """ Threaded event receive
         """
+        self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.client.connect((self.server_ip, self.server_port))
+
         self.client.send(user.encode()) # Send user name
-        response = self.client.recv(BUFFSIZE).decode()
+        status = self.client.recv(BUFFSIZE).decode()
         msg("Connected")
 
-        if response == "a:client_connected":
+        if status == "a:client_connected":
             while not self.kill:
                 msg("Working", 3)
                 # Check if plugin has been killed
                 if self.kill:
                     # Sending end signal to server
-                    self.client.settimeout(1)
-                    trash = self.client.recv(BUFFSIZE) # get trash data
-                    self.client.settimeout(None)
+                    # self.client.settimeout(1)
+                    # trash = self.client.recv(BUFFSIZE) # get trash data
+                    # print(trash)
+                    # self.client.settimeout(None)
                     self.client.send(b"EOT")
                     msg("stopping", 2, "Thread")
                     msg("killed", 3, "Process")
