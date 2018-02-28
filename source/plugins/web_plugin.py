@@ -7,8 +7,17 @@ from ..libs.rainbow import msg
 import signal
 
 class Plugin():
-    def __init__(self, queue, start, matrix=True, show=False, guishow=False):
+    def __init__(
+        self,
+        process_events,
+        start,
+        matrix=True,
+        show=False,
+        guishow=False
+        ):
         super(Plugin, self).__init__()
+
+        self.process_events = process_events
 
         self.name = "Example Plugin"
         self.version = "0.0.3"
@@ -19,7 +28,7 @@ class Plugin():
         self.screen.add(self.sample_text, refresh=False, x=9, y=4)
 
         self.data = ["<a href='google.com'>google</a>","<button>ok</button>"]
-        self.client = WebClient(self.data, queue)
+        self.client = WebClient(self.data, process_events)
 
         if start:
             self._start()
@@ -31,7 +40,9 @@ class Plugin():
             pass
         if not self.client.is_connected():
             self.client.handle_data()
-        # self.screen.refresh()
         while True:
+            if self.client.check_exit():
+                msg("ENDING PLUGIN", 3)
+                break
             msg("REFRESHED")
             sleep(3)
