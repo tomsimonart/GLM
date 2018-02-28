@@ -35,7 +35,6 @@ class WebClient():
     def _get_data(self):
         """ Get web data from plugin in encoded json format
         """
-        print(self.data)
         return json.dumps(self.data).encode()
 
     def get_event(self):
@@ -58,7 +57,35 @@ class WebClient():
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client.connect((self.server_ip, self.server_port))
         self.client.send(user.encode())
+
         status = self.client.recv(BUFFSIZE).decode()
+        if status == "a:client_connected":
+            self.connected = True
+
+            while self.connected:
+                self.client.send(b"READY")
+
+                # Receive event
+                event_json = self.client.recv(BUFFSIZE).decode()
+                if not event_json:
+                    self.connected = False
+
+                else:
+                    event = json.loads(event_json)
+
+                    # refresh phase
+                    if event == "REFRESH":
+                        self.client.send(self._get_data())
+
+                    # event phase
+                    elif type(event) == dict:
+                        self.client.send(json.dumps("RECEIVED").encode())
+
+                    # unknown phase
+                    elif event == "UNKNOWN":
+                        self.client.send(json.dumps("RETRYING").encode())
+
+
         # self.connected = True
         # msg("Connected", 1, "Thread")
         #
