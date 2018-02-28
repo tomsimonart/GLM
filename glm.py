@@ -31,13 +31,13 @@ def import_plugin(plugin):
         msg("Import error", 2, "import_plugin", ie)
 
 
-def plugin_checker(main_plugin, matrix=True, show=False) -> bool:
+def plugin_checker(main_plugin, queue_, start, matrix, show, guishow):
     if not hasattr(main_plugin, "Plugin"):
         msg("Plugin outdated", 2, "plugin_checker")
         return False
     else:
-        loaded_plugin = main_plugin.Plugin(matrix=matrix, show=show)
-    if not hasattr(loaded_plugin, "start"):
+        loaded_plugin = main_plugin.Plugin(queue_, start, matrix, show, guishow)
+    if not hasattr(loaded_plugin, "_start"):
         msg("Plugin outdated", 2, "plugin_checker")
         return False
     if not hasattr(loaded_plugin, "version"):
@@ -52,12 +52,12 @@ def plugin_checker(main_plugin, matrix=True, show=False) -> bool:
     return loaded_plugin
 
 
-def plugin_loader(plugin, matrix=False, show=True):
+def plugin_loader(plugin, queue_, start, matrix, show, guishow):
     main_plugin = import_plugin(PLUGIN_PACKAGE + "." + plugin.replace(".py", ''))
-    loaded_plugin = plugin_checker(main_plugin, matrix=matrix, show=show)
+    loaded_plugin = plugin_checker(main_plugin, queue_, False, matrix, show, guishow)
     if loaded_plugin is not False:
         print_plugin_info(loaded_plugin)
-        loaded_plugin.start()
+        loaded_plugin = main_plugin.Plugin(queue_, start, matrix, show, guishow)
 
 def print_plugin_info(plugin):
     if hasattr(plugin, "name"):
@@ -74,7 +74,7 @@ def print_plugin_info(plugin):
         msg("No version", 1, "print_plugin_info")
 
 
-def plugin_selector(plugins) -> str:
+def plugin_selector(plugins):
     for num, plugin in enumerate(plugins):
         print(num, plugin, sep=") ")
 
