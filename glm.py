@@ -61,15 +61,15 @@ def plugin_loader(plugin, queue_, start, matrix, show, guishow):
 
 def print_plugin_info(plugin):
     if hasattr(plugin, "name"):
-        print(color(plugin.name, "red"))
+        print(color(plugin.name, "cyan"))
     else:
         msg("No name", 1, "print_plugin_info")
     if hasattr(plugin, "author"):
-        print(color(plugin.author, "green"))
+        print(color(plugin.author, "cyan"))
     else:
         msg("No author", 1, "print_plugin_info")
     if hasattr(plugin, "version"):
-        print(color(plugin.version, "magenta"))
+        print(color(plugin.version, "cyan"))
     else:
         msg("No version", 1, "print_plugin_info")
 

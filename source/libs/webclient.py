@@ -80,7 +80,7 @@ class WebClient():
                 self.client.send(b"READY")
 
                 if self.check_exit():
-                    msg("EXIT CHECKED", 3)
+                    trash = self.client.recv(BUFFSIZE).decode()
                     self._close_connection()
 
                 else:
