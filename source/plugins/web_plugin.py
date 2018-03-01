@@ -32,5 +32,5 @@ class Plugin():
             if self.client.check_exit():
                 msg("ENDING PLUGIN", 3)
                 break
-            msg("REFRESHED")
-            sleep(3)
+            print('refresh')
+            self.screen.refresh()

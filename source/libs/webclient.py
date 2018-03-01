@@ -69,7 +69,12 @@ class WebClient():
         """ Threaded event receive
         """
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.client.connect((self.server_ip, self.server_port))
+        try:
+            self.client.connect((self.server_ip, self.server_port))
+        except socket.error as error:
+            if error.errno == socket.errno.ECONNREFUSED:
+                status = "e:refused"
+                msg("refused", 3)
         self.client.send(user.encode())
 
         status = self.client.recv(BUFFSIZE).decode()
