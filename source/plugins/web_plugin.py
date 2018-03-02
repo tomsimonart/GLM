@@ -1,7 +1,7 @@
 import queue
 from time import sleep
 from ..libs.screen import Screen
-from ..libs.slide import Slide
+from ..libs.slide import *
 from ..libs.text import Text
 from ..libs.webclient import WebClient
 from ..libs.rainbow import msg
@@ -17,11 +17,11 @@ class Plugin():
         if start:
             self.process_events = process_events
 
-            self.sample_text = Text('bitconneeeeeeeeect')
+            self.sample_text = Text('bitconneeeeect')
             self.slide = Slide(self.sample_text)
 
             self.screen = Screen(matrix=matrix, show=show)
-            self.screen.add(self.slide, refresh=True, x=0, y=4)
+            self.screen.add(self.slide, refresh=True, x=1, y=0)
 
             self.data = ["<a href='google.com'>google</a>","<button>ok</button>"]
             self.client = WebClient(self.data, process_events)
@@ -35,6 +35,5 @@ class Plugin():
                 msg("ENDING PLUGIN", 3)
                 break
             # print('refresh')
-            self.slide.refresh()
+            self.slide.refresh('down', 8, 1)
             self.screen.refresh()
-            # sleep(0.5)
