@@ -23,7 +23,10 @@ class Plugin():
             self.screen = Screen(matrix=matrix, show=show)
             self.screen.add(self.slide, refresh=True, x=1, y=0)
 
-            self.data = ["<a href='google.com'>google</a>","<button>ok</button>"]
+            self.data = [
+                ("a_0", "<a href='google.com'>google</a>"),
+                ("button_0" ,"<button>ok</button>")
+                ]
             self.client = WebClient(self.data, process_events)
             self._start()
 
@@ -34,6 +37,7 @@ class Plugin():
             if self.client.check_exit():
                 msg("ENDING PLUGIN", 3)
                 break
-            # print('refresh')
+            print('refresh')
+            sleep(3)
             self.slide.refresh('down', 8, 1)
             self.screen.refresh()
