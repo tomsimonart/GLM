@@ -6,6 +6,17 @@
 #                  COLORS                 #
 ###########################################
 
+try:
+    with open('./verbosity', 'r') as verbosity:
+        VERBOSITY = int(verbosity.readline()) # Verbosity level
+        SVERBOSITY = list(
+            map(lambda x: x.strip('\n'), verbosity.readlines())
+        ) # Specific verbosity
+except:
+    print('No verbosity file.')
+    VERBOSITY = 1
+    SVERBOSITY = []
+
 CODE = '\x1b['
 colors = {
     "BOLD": 1,
@@ -71,34 +82,48 @@ ERROR = color('⚑', 'RED')
 FATAL = color('⌁', 'RED', False, None, 'INVERT')
 
 
-def msg(message, priority=0, function=None, *data):
-    if priority <= 0:
-        # status
-        mode = STATUS
-        message = color(message, 'GREEN')
-    if priority == 1:
-        # Warning
-        mode = WARNING
-        message = color(message, 'YELLOW')
-    if priority == 2:
-        # Error
-        mode = ERROR
-        message = color(message, 'RED')
-    if priority >= 3:
-        # Fatal
-        mode = FATAL
-        message = color(message, 'RED', False, None, 'invert')
+def msg(message, priority=0, function=None, *data, **verbose):
+    _print = True
+    if 'level' in verbose:
+        if type(verbose['level']) is int:
+            if verbose['level'] <= VERBOSITY:
+                _print = True
+            else:
+                _print = False
 
-    print(mode, end=" ")
+    if 'slevel' in verbose:
+        if type(verbose['slevel']) is str:
+            if verbose['slevel'] in SVERBOSITY:
+                _print = True
 
-    if function is not None:
-        function_color = 'BLUE'
-        function += ": "
-        print(color(function, function_color), end="")
+    if _print:
+        if priority <= 0:
+            # status
+            mode = STATUS
+            message = color(message, 'GREEN')
+        if priority == 1:
+            # Warning
+            mode = WARNING
+            message = color(message, 'YELLOW')
+        if priority == 2:
+            # Error
+            mode = ERROR
+            message = color(message, 'RED')
+        if priority >= 3:
+            # Fatal
+            mode = FATAL
+            message = color(message, 'RED', False, None, 'invert')
 
-    print(message, end="")
-    if data is not ():
-        print("\t" + color("|", 'YELLOW'), end="")
-        print(color(" " + str(list(data)), "MAGENTA"))
-    else:
-        print()
+        print(mode, end=" ")
+
+        if function is not None:
+            function_color = 'BLUE'
+            function += ": "
+            print(color(function, function_color), end="")
+
+        print(message, end="")
+        if data is not ():
+            print("\t" + color("|", 'YELLOW'), end="")
+            print(color(" " + str(list(data)), "MAGENTA"))
+        else:
+            print()

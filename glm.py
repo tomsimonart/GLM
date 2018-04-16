@@ -23,32 +23,32 @@ def plugin_scan(_dir=PLUGIN_DIRECTORY):
 def import_plugin(plugin):
     try:
         main_plugin = importlib.import_module(plugin)
-        msg("plugin imported", 0, "import_plugin", plugin)
+        msg("plugin imported", 0, "import_plugin", plugin, level=2)
 
         return main_plugin
 
     except ImportError as ie:
-        msg("Import error", 2, "import_plugin", ie)
+        msg("Import error", 2, "import_plugin", ie, level=0)
 
 
 def plugin_checker(main_plugin, queue_, start, matrix, show, guishow):
     if not hasattr(main_plugin, "Plugin"):
-        msg("Plugin outdated", 2, "plugin_checker")
+        msg("Plugin outdated", 2, "plugin_checker", level=0)
         return False
     else:
         loaded_plugin = main_plugin.Plugin(queue_, start, matrix, show, guishow)
     if not hasattr(loaded_plugin, "_start"):
-        msg("Plugin outdated", 2, "plugin_checker")
+        msg("Plugin outdated", 2, "plugin_checker", level=0)
         return False
     if not hasattr(loaded_plugin, "version"):
-        msg("Plugin outdated", 2, "plugin_checker")
+        msg("Plugin outdated", 2, "plugin_checker", level=0)
         return False
     else:
         if loaded_plugin.version != VERSION:
-            msg("Plugin outdated", 2, "plugin_checker", loaded_plugin.version)
+            msg("Plugin outdated", 2, "plugin_checker", loaded_plugin.version, level=0)
             return False
         else:
-            msg("Plugin version ok", 0, "plugin_checker", loaded_plugin.version)
+            msg("Plugin version ok", 0, "plugin_checker", loaded_plugin.version, level=2)
     return loaded_plugin
 
 
@@ -61,17 +61,17 @@ def plugin_loader(plugin, queue_, start, matrix, show, guishow):
 
 def print_plugin_info(plugin):
     if hasattr(plugin, "name"):
-        print(color(plugin.name, "cyan"))
+        msg(plugin.name, 0, "Plugin", level=2)
     else:
-        msg("No name", 1, "print_plugin_info")
+        msg("No name", 1, "print_plugin_info", level=2)
     if hasattr(plugin, "author"):
-        print(color(plugin.author, "cyan"))
+        msg(plugin.author, 0, 'Plugin', level=2)
     else:
-        msg("No author", 1, "print_plugin_info")
+        msg("No author", 1, "print_plugin_info", level=2)
     if hasattr(plugin, "version"):
-        print(color(plugin.version, "cyan"))
+        msg(plugin.version, 0, 'Plugin', level=2)
     else:
-        msg("No version", 1, "print_plugin_info")
+        msg("No version", 1, "print_plugin_info", level=2)
 
 
 def plugin_selector(plugins):

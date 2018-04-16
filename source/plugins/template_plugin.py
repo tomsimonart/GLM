@@ -20,7 +20,7 @@ class Plugin():
                 matrix=matrix,
                 show=True,
                 guishow=guishow,
-                fps=30
+                fps=0.333
             )
             self.data = [] # Templated data
             # TODO untemplate data to webclient

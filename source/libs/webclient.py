@@ -74,7 +74,7 @@ class WebClient():
         except socket.error as error:
             if error.errno == socket.errno.ECONNREFUSED:
                 status = "e:refused"
-                msg("refused", 3)
+                msg("refused", 3, level=0)
         self.client.send(user.encode())
 
         status = self.client.recv(BUFFSIZE).decode()
@@ -120,4 +120,4 @@ class WebClient():
                 daemon=True
                 )
             get_event.start()
-            msg("starting", 1, "Thread")
+            msg("starting", 1, "Thread", level=3)
