@@ -2,20 +2,22 @@
 # By Infected
 # 2016
 
-###########################################
-#                  COLORS                 #
-###########################################
+from os import path
 
-try:
-    with open('./verbosity', 'r') as verbosity:
-        VERBOSITY = int(verbosity.readline()) # Verbosity level
-        SVERBOSITY = list(
-            map(lambda x: x.strip('\n'), verbosity.readlines())
-        ) # Specific verbosity
-except:
-    print('No verbosity file.')
-    VERBOSITY = 1
-    SVERBOSITY = []
+def check_verbosity():
+    dir = path.dirname(__file__)
+    abs_path = path.join(dir, '../../verbosity')
+    try:
+        with open(abs_path, 'r') as verbosity:
+            VERBOSITY = int(verbosity.readline()) # Verbosity level
+            SVERBOSITY = list(
+                map(lambda x: x.strip('\n'), verbosity.readlines())
+            ) # Specific verbosity
+    except:
+        print('No verbosity file.')
+        VERBOSITY = 1
+        SVERBOSITY = []
+    return VERBOSITY, SVERBOSITY
 
 CODE = '\x1b['
 colors = {
@@ -83,6 +85,7 @@ FATAL = color('⌁', 'RED', False, None, 'INVERT')
 
 
 def msg(message, priority=0, function=None, *data, **verbose):
+    VERBOSITY, SVERBOSITY = check_verbosity()
     _print = True
     if 'level' in verbose:
         if type(verbose['level']) is int:
