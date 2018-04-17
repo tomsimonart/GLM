@@ -18,11 +18,14 @@ class Plugin():
             self.process_events = process_events # Event queue
             self.screen = Screen( # Create matrix screen
                 matrix=matrix,
-                show=True,
+                show=show,
                 guishow=guishow,
                 fps=0.333
             )
-            self.data = [] # Templated data
+            self.data = """
+            {{ 'input label'|input }}
+            {{ 'button label'|button }}
+            """ # Templated data
             # TODO untemplate data to webclient
             # Initialize web client
             self.client = WebClient(self.data, process_events)
@@ -37,13 +40,14 @@ class Plugin():
 
     def _start(self):
         # Plugin loop
+        msg("STARTING PLUGIN", level=1)
         loop = True
         while loop:
             if not self.client.is_connected(): # Connect or reconnect
                 self.client.handle_data() # Start self.client
 
             if self.client.check_exit():
-                msg("ENDING PLUGIN", 3)
+                msg("ENDING PLUGIN", 3, level=1)
                 loop = False
             else:
                 # Plugin loop

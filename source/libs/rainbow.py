@@ -86,20 +86,20 @@ FATAL = color('⌁', 'RED', False, None, 'INVERT')
 
 def msg(message, priority=0, function=None, *data, **verbose):
     VERBOSITY, SVERBOSITY = check_verbosity()
-    _print = True
+    print_ = True
     if 'level' in verbose:
         if type(verbose['level']) is int:
             if verbose['level'] <= VERBOSITY:
-                _print = True
+                print_ = True
             else:
-                _print = False
+                print_ = False
 
     if 'slevel' in verbose:
         if type(verbose['slevel']) is str:
             if verbose['slevel'] in SVERBOSITY:
-                _print = True
+                print_ = True
 
-    if _print:
+    if print_:
         if priority <= 0:
             # status
             mode = STATUS

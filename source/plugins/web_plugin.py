@@ -20,7 +20,12 @@ class Plugin():
             self.sample_text = Text('bitconneeeeect')
             self.slide = Slide(self.sample_text)
 
-            self.screen = Screen(matrix=matrix, show=show)
+            self.screen = Screen(
+                matrix=matrix,
+                show=show,
+                guishow=guishow,
+                fps=5
+                )
             self.screen.add(self.slide, refresh=True, x=1, y=0)
 
             self.data = [
@@ -31,13 +36,12 @@ class Plugin():
             self._start()
 
     def _start(self):
+        msg("STARTING PLUGIN", level=1)
         while True:
             if not self.client.is_connected():
                 self.client.handle_data()
             if self.client.check_exit():
-                msg("ENDING PLUGIN", 3)
+                msg("ENDING PLUGIN", 3, level=1)
                 break
-            print('refresh')
-            sleep(3)
             self.slide.refresh('down', 8, 1)
             self.screen.refresh()
