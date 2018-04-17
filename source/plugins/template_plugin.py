@@ -4,6 +4,7 @@ from ..libs.slide import *
 from ..libs.text import Text
 from ..libs.webclient import WebClient
 from ..libs.rainbow import msg
+from ..libs.templater import Templater
 import signal
 
 class Plugin():
@@ -21,19 +22,21 @@ class Plugin():
                 show=show,
                 guishow=guishow,
                 fps=0.333
-            )
-            self.data = """
-            {{ 'input label'|input }}
-            {{ 'button label'|button }}
-            """ # Templated data
-            # TODO untemplate data to webclient
+                )
+            self.make_layout() # Create screen layout and process web template
             # Initialize web client
             self.client = WebClient(self.data, process_events)
-            self.make_layout() # Create screen layout
             self._start() # Start plugin loop
 
 
     def make_layout(self):
+        template = """{{ 'input label'|input }}
+        {{ 'button label'|button }}
+        <p>Test</p>
+        """
+        templater = Templater(template)
+        self.data = templater.untemplate()
+
         self.sample_text = Text('example')
         self.screen.add(self.sample_text, refresh=False, x=6, y=7)
 
