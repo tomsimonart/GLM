@@ -25,10 +25,9 @@ class Templater():
     def parse(self):
         html_id = 0
 
-        def get_tag_end(start_tag, tag_type):
+        def get_tag_end(start_tag, tag_type, cursor):
             tag_closing = self.etags[self.stags.index(tag_type)]
-            end_position = self.template[start_tag:].find(tag_closing)
-            print(end_position)
+            end_position = self.template[cursor:].find(tag_closing)
             if end_position == 0: # if not found or no closing
                 end_position = start_tag + len(tag_type)
             cursor = end_position + len(tag_closing)
@@ -45,7 +44,7 @@ class Templater():
                 else:
                     start_tag = position + len(tag)
                     tag_type = tag
-            end_tag, cursor = get_tag_end(start_tag, tag_type)
+            end_tag, cursor = get_tag_end(start_tag, tag_type, position)
             return tag_type, start_tag, end_tag, cursor
 
         def get_html_id(html_id):
@@ -71,8 +70,9 @@ class Templater():
 
         while cursor < len(self.template):
             # tag_meta = type, start, end, cursor end
-            tag_meta = get_next_tag(self.template[cursor:])
-            tag = self.template[tag_meta[1]:tag_meta[2]].strip()
+            tag_meta = get_next_tag(cursor)
+            print(tag_meta[1]+cursor, tag_meta[2] + cursor)
+            tag = self.template[cursor+tag_meta[1]:cursor+tag_meta[2]].strip()
             parse_tag(tag_meta[0], tag)
             cursor = tag_meta[3]
 
