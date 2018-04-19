@@ -31,9 +31,9 @@ class Plugin():
 
     def make_layout(self):
         self.template = """\
-        {{ label;'My Input Label' }}{{ input;'form_0' }}{# Comment #}
+        {{ label;My Input Label }}{{ input;form_0;test input }}{# Comment #}
         {% <h1>Raw html</h1> %}{# ID cannot start with html_ #}
-        {{button;'My Button'}}
+        {{button;button_0;My Button}}
         """
         self.templater = Templater(self.)
         self.data = self.template.render()
