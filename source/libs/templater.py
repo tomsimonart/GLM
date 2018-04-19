@@ -20,7 +20,7 @@ class Templater():
             }
 
     def render(self):
-        html = """<script type="text/javascript">function send_event(e){console.log('sent_event'+e.id);$.post('/plugin/event/',{id:e.id,value:e.value},function(data,status){alert(data+'\n'+status);});};</script>
+        html = """<script type="text/javascript">function send_event(e){console.log('sent_event'+e.id);$.post('/plugin/event/',{id:e.id,value:e.value});};</script>
         """ # AJAX sender
         for id_ in self.pre_render:
             html += self.elements[self.id_table[id_][0]](self.id_table[id_])

@@ -58,5 +58,5 @@ class Plugin():
                 # Plugin loop
                 event = self.client.get_event() # Get events (non blocking)
                 if event:
-                    msg('GOT EVENT LOLOLOL', 3, event)
+                    msg('Event received', 0, 'Plugin', event, level=2, slevel='event')
                 self.screen.refresh()
