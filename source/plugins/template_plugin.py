@@ -31,12 +31,13 @@ class Plugin():
 
     def make_layout(self):
         self.template = """\
-        {{ label;My Input Label }}{{ input;form_0;test input }}{# Comment #}
+        {{ label;label_0;My Input Label }}{{ input;form_0;test input }}{# Comment #}
         {% <h1>Raw html</h1> %}{# ID cannot start with html_ #}
         {{button;button_0;My Button}}
         """
-        self.templater = Templater(self.)
-        self.data = self.template.render()
+        self.templater = Templater(self.template)
+        self.templater.parse()
+        self.data = self.templater.render()
 
         self.sample_text = Text('example')
         self.screen.add(self.sample_text, refresh=False, x=6, y=7)
