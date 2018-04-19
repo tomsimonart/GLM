@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # Templater by Infected
 
+from ..libs.rainbow import msg
+
 class Templater():
     """Templater"""
     def __init__(self, template):
@@ -18,10 +20,18 @@ class Templater():
             }
 
     def render(self):
-        html = ''
+        html = """<script type="text/javascript">function send_event(e){console.log('sent_event'+e.id);$.post('/plugin/event/',{id:e.id,value:e.value},function(data,status){alert(data+'\n'+status);});};</script>
+        """ # AJAX sender
         for id_ in self.pre_render:
             html += self.elements[self.id_table[id_][0]](self.id_table[id_])
+        msg(html, 0, 'render', level=4, slevel='html')
         return html
+
+    def get_onclick(self):
+        return "onclick='send_event(this);'"
+
+    def get_onchange(self):
+        return "onchange='send_event(this);'"
 
     def parse(self):
         self.html_id = 0
@@ -110,7 +120,7 @@ class Templater():
         if len(data) >= 2:
             id_ = data[0]
             label = data[1]
-        return "<button id='{}'>{}</button>".format(id_, label)
+        return "<button {} id='{}' value='{}'>{}</button>".format(self.get_onclick(), id_, id_, label)
 
     def add_input(self, data):
         """{{ input;id;value;type }}"""
@@ -118,7 +128,7 @@ class Templater():
             id_ = data[0]
             value = data[1]
         type_ = 'text'
-        return "<input id='{}' value='{}' placeholder='{}' type='{}'>".format(id_, value, value, type_)
+        return "<input {} id='{}' value='{}' placeholder='{}' type='{}'>".format(self.get_onchange(), id_, value, value, type_)
 
     def add_html(self, html_data):
         """{% <some></html> %}"""

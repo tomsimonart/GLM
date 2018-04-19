@@ -103,6 +103,7 @@ class WebClient():
 
                         # event phase
                         elif type(event) == dict:
+                            self.events.put(event_json)
                             self.client.send(json.dumps("RECEIVED").encode())
 
                         # unknown phase
