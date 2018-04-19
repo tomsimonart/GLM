@@ -23,7 +23,7 @@ class Templater():
         html = """<script type="text/javascript">function send_event(e){console.log('sent_event'+e.id);$.post('/plugin/event/',{id:e.id,value:e.value});};</script>
         """ # AJAX sender
         for id_ in self.pre_render:
-            html += self.elements[self.id_table[id_][0]](self.id_table[id_])
+            html += self.elements[self.id_table[id_][0]](self.id_table[id_], id_)
         msg(html, 0, 'render', level=4, slevel='html')
         return html
 
@@ -108,36 +108,36 @@ class Templater():
             else:
                 cursor = len(self.template)
 
-    def add_label(self, data):
+    def add_label(self, data, id_):
         """{{ label;id;text }}"""
         if len(data) >= 2:
-            id_ = data[0]
+            tag = data[0]
             text = data[1]
         return "<p id='{}'>{}</p>".format(id_, text)
 
-    def add_button(self, data):
+    def add_button(self, data, id_):
         """{{ button;id;button_label }}"""
         if len(data) >= 2:
-            id_ = data[0]
+            tag = data[0]
             label = data[1]
         return "<button {} id='{}' value='{}'>{}</button>".format(self.get_onclick(), id_, id_, label)
 
-    def add_input(self, data):
+    def add_input(self, data, id_):
         """{{ input;id;value;type }}"""
         if len(data) >= 2:
-            id_ = data[0]
+            tag = data[0]
             value = data[1]
         type_ = 'text'
         return "<input {} id='{}' value='{}' placeholder='{}' type='{}'>".format(self.get_onchange(), id_, value, value, type_)
 
-    def add_html(self, html_data):
+    def add_html(self, html_data, id_):
         """{% <some></html> %}"""
         if len(html_data) >= 2:
-            id_ = html_data[0]
+            tag = html_data[0]
             html = html_data[1]
         return html
 
-    def add_line(self, extra):
+    def add_line(self, extra, id_):
         """\n"""
         return '<br>'
 

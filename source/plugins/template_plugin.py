@@ -1,11 +1,10 @@
-from time import sleep
-from ..libs.screen import Screen
+import json
 from ..libs.slide import *
 from ..libs.text import Text
-from ..libs.webclient import WebClient
 from ..libs.rainbow import msg
+from ..libs.screen import Screen
 from ..libs.templater import Templater
-import signal
+from ..libs.webclient import WebClient
 
 class Plugin():
     def __init__(self, process_events, start, matrix, show, guishow):
@@ -31,16 +30,16 @@ class Plugin():
 
     def make_layout(self):
         self.template = """\
-        {{ label;label_0;My Input Label }}{{ input;form_0;test input }}{# Comment #}
+        {{ label;title;My Input Label }}{{ input;matrix_text;example }}{# Comment #}
         {% <h1>Raw html</h1> %}{# ID cannot start with html_ #}
-        {{button;button_0;My Button}}
+        {{button;submit;My Button}}
         """
         self.templater = Templater(self.template)
         self.templater.parse()
         self.data = self.templater.render()
 
         self.sample_text = Text('example')
-        self.screen.add(self.sample_text, refresh=False, x=6, y=7)
+        self.screen.add(self.sample_text, refresh=False, x=6, y=7, name='entry')
 
 
     def _start(self):
@@ -56,7 +55,13 @@ class Plugin():
                 loop = False
             else:
                 # Plugin loop
-                event = self.client.get_event() # Get events (non blocking)
-                if event:
-                    msg('Event received', 0, 'Plugin', event, level=2, slevel='event')
+                event_json = self.client.get_event() # Get events (non blocking)
+                if event_json:
+                    event = json.loads(event_json)
+                    if 'matrix_text' in event.keys():
+                        self.sample_text.edit(event['matrix_text'].lower())
+                        print(self.templater.id_table)
+                    if 'submit' in event.keys():
+                        self.sample_text.edit('reset')
+
                 self.screen.refresh()

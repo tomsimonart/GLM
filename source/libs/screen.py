@@ -68,21 +68,34 @@ class Screen:
         elif str(type(element)) == "<class '" + __package__ + ".image.Image'>":
             self.childs.append((element, x, y, refresh, mode, name))
         else:
-            msg("not a valid element", 2, "Screen.add()", type(element))
+            msg(
+            "not a valid element",
+            2,
+            "Screen.add()",
+            type(element),
+            level=0
+            )
 
     def remove(self, id_):
         """Delete a child by his id"""
         if id_ <= len(self.childs) - 1:
-            msg(self.childs.pop(id_)[5], 0, "Removed")
+            msg(self.childs.pop(id_)[5], 0, "Removed", level=2)
         else:
-            msg("no such child", 2, "Screen.remove()", len(self.childs), id_)
+            msg(
+                "no such child",
+                2,
+                "Screen.remove()",
+                len(self.childs),
+                id_,
+                level=0
+                )
 
 
     def remove_all(self):
         """Remove all childs"""
         number_of_childs = len(self.childs)
         self.childs = []
-        msg("Removed %i childs" % number_of_childs, 1)
+        msg("Removed %i childs" % number_of_childs, 1, level=2)
 
 
     def refresh(self):
@@ -123,6 +136,9 @@ class Screen:
                 string += "[" + color("O", "magenta", False) + "]"
             string += "\n"
         return string
+
+    def __getitem__(self, index):
+        return self.childs[index]
 
     def show_gui(self):
         """
